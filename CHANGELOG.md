@@ -1,0 +1,27 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.0.0] - 2026-03-18
+
+### Added
+
+- Initial release
+- Document scanning with native platform APIs (VisionKit on iOS, ML Kit on Android)
+- Automatic edge detection, perspective correction, and cropping
+- Multi-page scanning support
+- Output as JPEG images or PDF
+- Configurable JPEG quality (1-100)
+- Configurable page limits with safety cap
+- `ScanOptions` DTO for type-safe scan configuration
+- `OutputFormat` enum (`Jpeg`, `Pdf`)
+- `DocumentScanned`, `ScanCancelled`, `ScanFailed` events
+- Publishable config file with all defaults
+- JavaScript client library with event constants
+- Boost AI guidelines
+- Pest test suite with full coverage
+
+[1.0.0]: https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/releases/tag/v1.0.0
