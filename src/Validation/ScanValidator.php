@@ -29,10 +29,8 @@ final class ScanValidator
             }
         }
 
-        if (isset($options['jpegQuality'])) {
-            if ($options['jpegQuality'] < 1 || $options['jpegQuality'] > 100) {
-                throw new \InvalidArgumentException('jpegQuality must be between 1 and 100.');
-            }
+        if (isset($options['jpegQuality']) && ($options['jpegQuality'] < 1 || $options['jpegQuality'] > 100)) {
+            throw new \InvalidArgumentException('jpegQuality must be between 1 and 100.');
         }
     }
 

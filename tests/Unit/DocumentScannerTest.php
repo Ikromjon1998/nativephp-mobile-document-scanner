@@ -116,7 +116,7 @@ describe('scan', function (): void {
     });
 
     it('returns empty array when bridge returns invalid json', function (): void {
-        stubNativephpCall(fn () => 'not-json');
+        stubNativephpCall(fn (): string => 'not-json');
 
         $result = $this->scanner->scan();
 
