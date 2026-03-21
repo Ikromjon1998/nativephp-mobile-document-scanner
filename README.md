@@ -1,16 +1,17 @@
 # NativePHP Mobile Document Scanner
 
-[![Tests](https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/actions/workflows/tests.yml/badge.svg)](https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/actions/workflows/tests.yml)
-[![License](https://img.shields.io/packagist/l/ikromjon/nativephp-mobile-document-scanner.svg)](https://packagist.org/packages/ikromjon/nativephp-mobile-document-scanner)
+[![Tests](https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/actions/workflows/tests.yml)
+[![License: MIT](https://img.shields.io/github/license/Ikromjon1998/nativephp-mobile-document-scanner)](LICENSE)
+[![PHP Version](https://img.shields.io/badge/php-8.3%2B-8892BF)](composer.json)
 
 Scan documents with automatic edge detection, perspective correction, and cropping in your NativePHP Mobile app — powered by native platform APIs.
 
 ## How it works
 
-| Platform | Native API | Features |
-|----------|-----------|----------|
-| **iOS** | VisionKit (`VNDocumentCameraViewController`) | Auto edge detection, perspective correction, shadow removal, multi-page |
-| **Android** | Google ML Kit Document Scanner | Auto edge detection, cropping, rotation, multi-page, gallery import |
+| Platform    | Native API                                   | Features                                                                |
+| ----------- | -------------------------------------------- | ----------------------------------------------------------------------- |
+| **iOS**     | VisionKit (`VNDocumentCameraViewController`) | Auto edge detection, perspective correction, shadow removal, multi-page |
+| **Android** | Google ML Kit Document Scanner               | Auto edge detection, cropping, rotation, multi-page, gallery import     |
 
 ## Features
 
@@ -47,13 +48,13 @@ Optionally publish the config file:
 php artisan vendor:publish --tag=document-scanner-config
 ```
 
-| Key | Default | Description |
-|-----|---------|-------------|
-| `default_max_pages` | `0` | Default max pages per scan (0 = unlimited) |
-| `max_pages_limit` | `100` | Absolute cap on pages per scan |
-| `default_output_format` | `jpeg` | Default output format (`jpeg` or `pdf`) |
-| `default_jpeg_quality` | `90` | Default JPEG compression quality (1-100) |
-| `storage_directory` | `scanned-documents` | Subdirectory for scanned files |
+| Key                     | Default             | Description                                |
+| ----------------------- | ------------------- | ------------------------------------------ |
+| `default_max_pages`     | `0`                 | Default max pages per scan (0 = unlimited) |
+| `max_pages_limit`       | `100`               | Absolute cap on pages per scan             |
+| `default_output_format` | `jpeg`              | Default output format (`jpeg` or `pdf`)    |
+| `default_jpeg_quality`  | `90`                | Default JPEG compression quality (1-100)   |
+| `storage_directory`     | `scanned-documents` | Subdirectory for scanned files             |
 
 ## Usage (PHP)
 
@@ -96,11 +97,11 @@ DocumentScanner::scan(new ScanOptions(
 
 ### Scan Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `maxPages` | int | No | Max pages to scan (0 = unlimited) |
-| `outputFormat` | OutputFormat\|string | No | `jpeg` or `pdf` |
-| `jpegQuality` | int | No | JPEG quality 1-100 (only for jpeg output) |
+| Parameter      | Type                 | Required | Description                               |
+| -------------- | -------------------- | -------- | ----------------------------------------- |
+| `maxPages`     | int                  | No       | Max pages to scan (0 = unlimited)         |
+| `outputFormat` | OutputFormat\|string | No       | `jpeg` or `pdf`                           |
+| `jpegQuality`  | int                  | No       | JPEG quality 1-100 (only for jpeg output) |
 
 ## Listening to Events (Livewire)
 
@@ -150,33 +151,36 @@ class HandleDocumentScanned
 ## Usage (JavaScript)
 
 ```js
-import { scan, Events } from '../../vendor/ikromjon/nativephp-mobile-document-scanner/resources/js/index.js';
-import { On } from '#nativephp';
+import {
+  scan,
+  Events,
+} from "../../vendor/ikromjon/nativephp-mobile-document-scanner/resources/js/index.js";
+import { On } from "#nativephp";
 
 // Open scanner
-await scan({ maxPages: 3, outputFormat: 'jpeg', jpegQuality: 90 });
+await scan({ maxPages: 3, outputFormat: "jpeg", jpegQuality: 90 });
 
 // Listen for results
 On(Events.DocumentScanned, (payload) => {
-    console.log('Scanned:', payload.paths, payload.pageCount);
+  console.log("Scanned:", payload.paths, payload.pageCount);
 });
 
 On(Events.ScanCancelled, () => {
-    console.log('Cancelled');
+  console.log("Cancelled");
 });
 
 On(Events.ScanFailed, (payload) => {
-    console.error('Failed:', payload.error);
+  console.error("Failed:", payload.error);
 });
 ```
 
 ## Events
 
-| Event | Payload | When |
-|-------|---------|------|
+| Event             | Payload                              | When                            |
+| ----------------- | ------------------------------------ | ------------------------------- |
 | `DocumentScanned` | `paths`, `pageCount`, `outputFormat` | Scanning completed successfully |
-| `ScanCancelled` | — | User cancelled the scanner |
-| `ScanFailed` | `error` | An error occurred |
+| `ScanCancelled`   | —                                    | User cancelled the scanner      |
+| `ScanFailed`      | `error`                              | An error occurred               |
 
 ## Required Permissions
 
