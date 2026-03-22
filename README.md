@@ -192,6 +192,14 @@ Declared automatically via `nativephp.json`. No manual configuration needed.
 
 No API keys or internet required.
 
+## Documentation
+
+- [Installation](docs/installation.md) — requirements, setup steps, verification
+- [Configuration](docs/configuration.md) — all config options explained
+- [Usage with Livewire](docs/livewire.md) — Livewire components and event handling
+- [Usage with JavaScript](docs/javascript.md) — Inertia Vue/React integration
+- [API Reference](docs/api-reference.md) — events, DTOs, enums, validation, contracts
+
 ## Testing
 
 ```bash
