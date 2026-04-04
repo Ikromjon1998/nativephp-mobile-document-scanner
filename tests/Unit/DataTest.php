@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Ikromjon\DocumentScanner\Data\ScanOptions;
 use Ikromjon\DocumentScanner\DocumentScanner;
 use Ikromjon\DocumentScanner\Enums\OutputFormat;

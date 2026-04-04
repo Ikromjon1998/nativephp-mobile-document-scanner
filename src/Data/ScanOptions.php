@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ikromjon\DocumentScanner\Data;
 
 use Ikromjon\DocumentScanner\Enums\OutputFormat;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Ikromjon\DocumentScanner\DocumentScanner;
 
 it('registers DocumentScanner as a singleton', function (): void {

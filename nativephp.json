@@ -4,7 +4,7 @@
     "bridge_functions": [
         {
             "name": "DocumentScanner.Scan",
-            "android": "com.ikromjon.documentscanner.DocumentScannerFunctions.Scan",
+            "android": "com.nativephp.documentscanner.DocumentScannerFunctions.Scan",
             "ios": "DocumentScannerFunctions.Scan",
             "description": "Open the document scanner and return scanned page image paths"
         }

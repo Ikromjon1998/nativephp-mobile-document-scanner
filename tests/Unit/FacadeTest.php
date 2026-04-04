@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Ikromjon\DocumentScanner\DocumentScanner as DocumentScannerClass;
 use Ikromjon\DocumentScanner\Facades\DocumentScanner;
 

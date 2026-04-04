@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ikromjon\DocumentScanner\Contracts;
 
 use Ikromjon\DocumentScanner\Data\ScanOptions;

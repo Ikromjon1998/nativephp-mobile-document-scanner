@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ikromjon\DocumentScanner\Facades;
 
 use Ikromjon\DocumentScanner\Contracts\DocumentScannerInterface;

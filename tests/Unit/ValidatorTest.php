@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Ikromjon\DocumentScanner\Validation\ScanValidator;
 
 describe('basic validation', function (): void {

@@ -5,11 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2026-03-18
+## [1.0.0] - 2026-04-05
 
 ### Added
 
-- Initial release
 - Document scanning with native platform APIs (VisionKit on iOS, ML Kit on Android)
 - Automatic edge detection, perspective correction, and cropping
 - Multi-page scanning support
@@ -23,5 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JavaScript client library with event constants
 - Boost AI guidelines
 - Pest test suite with full coverage
+- `declare(strict_types=1)` in all PHP files
 
 [1.0.0]: https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/releases/tag/v1.0.0

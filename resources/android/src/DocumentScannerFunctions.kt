@@ -1,4 +1,4 @@
-package com.ikromjon.documentscanner
+package com.nativephp.documentscanner
 
 import android.app.Activity
 import android.content.Intent

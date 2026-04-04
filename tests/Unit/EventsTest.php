@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Ikromjon\DocumentScanner\Events\DocumentScanned;
 use Ikromjon\DocumentScanner\Events\ScanCancelled;
 use Ikromjon\DocumentScanner\Events\ScanFailed;
