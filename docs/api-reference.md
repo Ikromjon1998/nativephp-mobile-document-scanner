@@ -152,6 +152,7 @@ Validates scan options. Throws `InvalidArgumentException` on failure.
 | `maxPages`     | Must be `0` (unlimited) or positive integer, cannot exceed `max_pages_limit` config |
 | `outputFormat` | Must be `'jpeg'` or `'pdf'`                                                         |
 | `jpegQuality`  | Must be between `1` and `100`                                                       |
+| `galleryImport`| Must be a boolean                                                                   |
 
 Validation runs automatically when calling `DocumentScanner::scan()` or `ScanOptions::toArray()`.
 

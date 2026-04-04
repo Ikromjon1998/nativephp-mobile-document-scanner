@@ -34,6 +34,10 @@ final class ScanValidator
         if (isset($options['jpegQuality']) && ($options['jpegQuality'] < 1 || $options['jpegQuality'] > 100)) {
             throw new \InvalidArgumentException('jpegQuality must be between 1 and 100.');
         }
+
+        if (isset($options['galleryImport']) && ! is_bool($options['galleryImport'])) {
+            throw new \InvalidArgumentException('galleryImport must be a boolean.');
+        }
     }
 
     private static function configValue(string $key, mixed $default = null): mixed

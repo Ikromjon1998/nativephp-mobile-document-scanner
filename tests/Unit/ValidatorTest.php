@@ -109,3 +109,25 @@ describe('jpegQuality validation', function (): void {
         expect(true)->toBeTrue();
     });
 });
+
+describe('galleryImport validation', function (): void {
+    it('allows true', function (): void {
+        ScanValidator::validate(['galleryImport' => true]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('allows false', function (): void {
+        ScanValidator::validate(['galleryImport' => false]);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('throws for non-boolean string', function (): void {
+        ScanValidator::validate(['galleryImport' => 'yes']);
+    })->throws(InvalidArgumentException::class, 'galleryImport must be a boolean.');
+
+    it('throws for non-boolean int', function (): void {
+        ScanValidator::validate(['galleryImport' => 1]);
+    })->throws(InvalidArgumentException::class, 'galleryImport must be a boolean.');
+});

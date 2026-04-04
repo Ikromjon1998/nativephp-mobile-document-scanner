@@ -198,4 +198,10 @@ describe('scan', function (): void {
 
         $this->scanner->scan(['maxPages' => -1]);
     })->throws(InvalidArgumentException::class, 'maxPages must be 0 (unlimited) or a positive integer.');
+
+    it('throws when galleryImport is not boolean', function (): void {
+        stubNativephpCall(fn () => json_encode(['success' => true]));
+
+        $this->scanner->scan(['galleryImport' => 'yes']);
+    })->throws(InvalidArgumentException::class, 'galleryImport must be a boolean.');
 });
