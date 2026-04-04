@@ -46,6 +46,7 @@ new ScanOptions(
     maxPages: int = 0,
     outputFormat: OutputFormat|string = OutputFormat::Jpeg,
     jpegQuality: int = 90,
+    galleryImport: bool = false,
 )
 ```
 
@@ -54,6 +55,7 @@ new ScanOptions(
 | `maxPages`     | `int`                  | `0`                  | Max pages (0 = unlimited) |
 | `outputFormat` | `OutputFormat\|string` | `OutputFormat::Jpeg` | `'jpeg'` or `'pdf'`       |
 | `jpegQuality`  | `int`                  | `90`                 | JPEG quality 1-100        |
+| `galleryImport`| `bool`                 | `false`              | Allow gallery import (Android only) |
 
 ### Methods
 

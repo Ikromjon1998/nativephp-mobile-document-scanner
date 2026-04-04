@@ -12,7 +12,8 @@ describe('ScanOptions', function (): void {
 
         expect($options->maxPages)->toBe(0)
             ->and($options->outputFormat)->toBe(OutputFormat::Jpeg)
-            ->and($options->jpegQuality)->toBe(90);
+            ->and($options->jpegQuality)->toBe(90)
+            ->and($options->galleryImport)->toBeFalse();
     });
 
     it('converts to array with defaults', function (): void {
@@ -74,6 +75,20 @@ describe('ScanOptions', function (): void {
         $options = new ScanOptions(outputFormat: 'tiff');
         $options->toArray();
     })->throws(InvalidArgumentException::class, 'outputFormat must be "jpeg" or "pdf".');
+
+    it('includes galleryImport when true', function (): void {
+        $options = new ScanOptions(galleryImport: true);
+        $array = $options->toArray();
+
+        expect($array['galleryImport'])->toBeTrue();
+    });
+
+    it('excludes galleryImport when false', function (): void {
+        $options = new ScanOptions(galleryImport: false);
+        $array = $options->toArray();
+
+        expect($array)->not->toHaveKey('galleryImport');
+    });
 
     it('can be passed to scan method', function (): void {
         stubNativephpCall(fn () => json_encode(['success' => true]));
