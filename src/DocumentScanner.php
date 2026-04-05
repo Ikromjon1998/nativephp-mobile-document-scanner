@@ -7,6 +7,7 @@ namespace Ikromjon\DocumentScanner;
 use Ikromjon\DocumentScanner\Contracts\DocumentScannerInterface;
 use Ikromjon\DocumentScanner\Data\ScanOptions;
 use Ikromjon\DocumentScanner\Enums\OutputFormat;
+use Ikromjon\DocumentScanner\Enums\ScannerMode;
 use Ikromjon\DocumentScanner\Validation\ScanValidator;
 
 class DocumentScanner implements DocumentScannerInterface
@@ -40,6 +41,10 @@ class DocumentScanner implements DocumentScannerInterface
             $options['outputFormat'] = $options['outputFormat']->value;
         }
 
+        if (isset($options['scannerMode']) && $options['scannerMode'] instanceof ScannerMode) {
+            $options['scannerMode'] = $options['scannerMode']->value;
+        }
+
         ScanValidator::validate($options);
 
         return $options;
@@ -59,6 +64,7 @@ class DocumentScanner implements DocumentScannerInterface
             'max_pages_limit' => $this->configValue('max_pages_limit', 100),
             'storage_directory' => $this->configValue('storage_directory', 'scanned-documents'),
             'default_gallery_import' => $this->configValue('default_gallery_import', false),
+            'default_scanner_mode' => $this->configValue('default_scanner_mode', 'full'),
         ];
     }
 

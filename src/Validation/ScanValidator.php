@@ -38,6 +38,13 @@ final class ScanValidator
         if (isset($options['galleryImport']) && ! is_bool($options['galleryImport'])) {
             throw new \InvalidArgumentException('galleryImport must be a boolean.');
         }
+
+        if (isset($options['scannerMode'])) {
+            $validModes = ['base', 'filter', 'full'];
+            if (! in_array($options['scannerMode'], $validModes, true)) {
+                throw new \InvalidArgumentException('scannerMode must be "base", "filter", or "full".');
+            }
+        }
     }
 
     private static function configValue(string $key, mixed $default = null): mixed

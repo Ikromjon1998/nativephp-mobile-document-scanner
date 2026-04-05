@@ -47,6 +47,7 @@ new ScanOptions(
     outputFormat: OutputFormat|string = OutputFormat::Jpeg,
     jpegQuality: int = 90,
     galleryImport: bool = false,
+    scannerMode: ScannerMode|string = ScannerMode::Full,
 )
 ```
 
@@ -56,6 +57,7 @@ new ScanOptions(
 | `outputFormat` | `OutputFormat\|string` | `OutputFormat::Jpeg` | `'jpeg'` or `'pdf'`       |
 | `jpegQuality`  | `int`                  | `90`                 | JPEG quality 1-100        |
 | `galleryImport`| `bool`                 | `false`              | Allow gallery import (Android only) |
+| `scannerMode`  | `ScannerMode\|string`  | `ScannerMode::Full`  | Scanner mode (Android only)         |
 
 ### Methods
 
@@ -71,6 +73,20 @@ use Ikromjon\DocumentScanner\Enums\OutputFormat;
 | ------ | -------- |
 | `Jpeg` | `'jpeg'` |
 | `Pdf`  | `'pdf'`  |
+
+## ScannerMode Enum
+
+```php
+use Ikromjon\DocumentScanner\Enums\ScannerMode;
+```
+
+| Case     | Value      | Description                          |
+| -------- | ---------- | ------------------------------------ |
+| `Base`   | `'base'`   | Fast, minimal processing             |
+| `Filter` | `'filter'` | Adds grayscale/color filter options  |
+| `Full`   | `'full'`   | Full ML-enhanced cleaning (default)  |
+
+**Android only** — iOS VisionKit always applies full processing.
 
 ## Events
 
@@ -153,6 +169,7 @@ Validates scan options. Throws `InvalidArgumentException` on failure.
 | `outputFormat` | Must be `'jpeg'` or `'pdf'`                                                         |
 | `jpegQuality`  | Must be between `1` and `100`                                                       |
 | `galleryImport`| Must be a boolean                                                                   |
+| `scannerMode`  | Must be `'base'`, `'filter'`, or `'full'`                                           |
 
 Validation runs automatically when calling `DocumentScanner::scan()` or `ScanOptions::toArray()`.
 

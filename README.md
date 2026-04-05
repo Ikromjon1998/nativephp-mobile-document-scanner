@@ -56,6 +56,7 @@ php artisan vendor:publish --tag=document-scanner-config
 | `default_jpeg_quality`  | `90`                | Default JPEG compression quality (1-100)   |
 | `storage_directory`     | `scanned-documents` | Subdirectory for scanned files             |
 | `default_gallery_import`| `false`             | Allow gallery import (Android only)        |
+| `default_scanner_mode`  | `full`              | Scanner mode: `base`, `filter`, `full` (Android only) |
 
 ## Usage (PHP)
 
@@ -104,6 +105,7 @@ DocumentScanner::scan(new ScanOptions(
 | `outputFormat` | OutputFormat\|string | No       | `jpeg` or `pdf`                           |
 | `jpegQuality`  | int                  | No       | JPEG quality 1-100 (only for jpeg output) |
 | `galleryImport`| bool                 | No       | Allow gallery import (Android only)       |
+| `scannerMode`  | ScannerMode\|string  | No       | `base`, `filter`, or `full` (Android only)|
 
 ## Listening to Events (Livewire)
 

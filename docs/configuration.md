@@ -16,6 +16,7 @@ return [
     'default_jpeg_quality'   => 90,
     'storage_directory'      => 'scanned-documents',
     'default_gallery_import' => false,
+    'default_scanner_mode'   => 'full',
 ];
 ```
 
@@ -79,6 +80,16 @@ Subdirectory within the app's storage where scanned files are saved. On Android 
 
 Whether to allow importing images from the device gallery in addition to live camera scanning. When enabled, the scanner UI shows a gallery button. **Android only** — iOS VisionKit does not support gallery import.
 
+### `default_scanner_mode`
+
+|             |                                   |
+| ----------- | --------------------------------- |
+| **Type**    | `string`                          |
+| **Default** | `'full'`                          |
+| **Options** | `'base'`, `'filter'`, `'full'`    |
+
+The ML Kit scanner processing mode. `base` is fast with minimal processing, `filter` adds grayscale/color filter options, `full` applies ML-enhanced cleaning. **Android only** — iOS VisionKit always applies full processing.
+
 ## Overriding Per Scan
 
 Config values are defaults. You can override them on each scan call:
@@ -103,6 +114,7 @@ config('document-scanner.default_output_format');   // 'jpeg'
 config('document-scanner.default_jpeg_quality');    // 90
 config('document-scanner.storage_directory');        // 'scanned-documents'
 config('document-scanner.default_gallery_import');   // false
+config('document-scanner.default_scanner_mode');     // 'full'
 ```
 
 ## Environment-Specific Config

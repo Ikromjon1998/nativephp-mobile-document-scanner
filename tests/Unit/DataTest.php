@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Ikromjon\DocumentScanner\Data\ScanOptions;
 use Ikromjon\DocumentScanner\DocumentScanner;
 use Ikromjon\DocumentScanner\Enums\OutputFormat;
+use Ikromjon\DocumentScanner\Enums\ScannerMode;
 
 describe('ScanOptions', function (): void {
     it('creates with defaults', function (): void {
@@ -13,7 +14,8 @@ describe('ScanOptions', function (): void {
         expect($options->maxPages)->toBe(0)
             ->and($options->outputFormat)->toBe(OutputFormat::Jpeg)
             ->and($options->jpegQuality)->toBe(90)
-            ->and($options->galleryImport)->toBeFalse();
+            ->and($options->galleryImport)->toBeFalse()
+            ->and($options->scannerMode)->toBe(ScannerMode::Full);
     });
 
     it('converts to array with defaults', function (): void {
@@ -23,6 +25,7 @@ describe('ScanOptions', function (): void {
         expect($array)->toBe([
             'outputFormat' => 'jpeg',
             'jpegQuality' => 90,
+            'scannerMode' => 'full',
         ]);
     });
 
@@ -89,6 +92,25 @@ describe('ScanOptions', function (): void {
 
         expect($array)->not->toHaveKey('galleryImport');
     });
+
+    it('converts ScannerMode enum to string', function (): void {
+        $options = new ScanOptions(scannerMode: ScannerMode::Base);
+        $array = $options->toArray();
+
+        expect($array['scannerMode'])->toBe('base');
+    });
+
+    it('passes string scannerMode unchanged', function (): void {
+        $options = new ScanOptions(scannerMode: 'filter');
+        $array = $options->toArray();
+
+        expect($array['scannerMode'])->toBe('filter');
+    });
+
+    it('throws when scannerMode is invalid string', function (): void {
+        $options = new ScanOptions(scannerMode: 'turbo');
+        $options->toArray();
+    })->throws(InvalidArgumentException::class, 'scannerMode must be "base", "filter", or "full".');
 
     it('can be passed to scan method', function (): void {
         stubNativephpCall(fn () => json_encode(['success' => true]));
