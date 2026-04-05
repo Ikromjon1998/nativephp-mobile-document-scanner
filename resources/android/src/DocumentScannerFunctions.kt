@@ -26,6 +26,7 @@ object DocumentScannerFunctions {
     private var defaultJpegQuality = 90
     private var maxPagesLimit = 100
     private var storageDirectory = "scanned-documents"
+    private var defaultGalleryImport = false
 
     private var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>? = null
     private var currentOutputFormat = "jpeg"
@@ -36,6 +37,7 @@ object DocumentScannerFunctions {
         (config["default_jpeg_quality"] as? Number)?.let { defaultJpegQuality = it.toInt() }
         (config["max_pages_limit"] as? Number)?.let { maxPagesLimit = it.toInt() }
         (config["storage_directory"] as? String)?.let { storageDirectory = it }
+        (config["default_gallery_import"] as? Boolean)?.let { defaultGalleryImport = it }
     }
 
     private fun getStorageDir(activity: Activity): File {
@@ -144,11 +146,12 @@ object DocumentScannerFunctions {
             val maxPages = (parameters["maxPages"] as? Number)?.toInt() ?: defaultMaxPages
             val outputFormat = parameters["outputFormat"] as? String ?: defaultOutputFormat
             val jpegQuality = (parameters["jpegQuality"] as? Number)?.toInt() ?: defaultJpegQuality
+            val galleryImport = parameters["galleryImport"] as? Boolean ?: defaultGalleryImport
 
             currentOutputFormat = outputFormat
 
             val optionsBuilder = GmsDocumentScannerOptions.Builder()
-                .setGalleryImportAllowed(false)
+                .setGalleryImportAllowed(galleryImport)
                 .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL)
 
             if (outputFormat == "pdf") {

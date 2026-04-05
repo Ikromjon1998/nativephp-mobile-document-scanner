@@ -58,6 +58,7 @@ class DocumentScanner implements DocumentScannerInterface
             'default_jpeg_quality' => $this->configValue('default_jpeg_quality', 90),
             'max_pages_limit' => $this->configValue('max_pages_limit', 100),
             'storage_directory' => $this->configValue('storage_directory', 'scanned-documents'),
+            'default_gallery_import' => $this->configValue('default_gallery_import', false),
         ];
     }
 

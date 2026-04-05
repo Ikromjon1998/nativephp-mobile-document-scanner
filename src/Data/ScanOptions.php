@@ -13,6 +13,7 @@ final readonly class ScanOptions
         public int $maxPages = 0,
         public OutputFormat|string $outputFormat = OutputFormat::Jpeg,
         public int $jpegQuality = 90,
+        public bool $galleryImport = false,
     ) {}
 
     /**
@@ -33,6 +34,10 @@ final readonly class ScanOptions
             : $this->outputFormat;
 
         $data['jpegQuality'] = $this->jpegQuality;
+
+        if ($this->galleryImport) {
+            $data['galleryImport'] = true;
+        }
 
         ScanValidator::validate($data);
 

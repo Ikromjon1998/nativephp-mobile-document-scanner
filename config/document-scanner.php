@@ -63,4 +63,16 @@ return [
 
     'storage_directory' => 'scanned-documents',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Default Gallery Import
+    |--------------------------------------------------------------------------
+    |
+    | Whether to allow importing images from the device gallery in addition
+    | to live camera scanning. Android only — iOS does not support this.
+    |
+    */
+
+    'default_gallery_import' => false,
+
 ];

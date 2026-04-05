@@ -10,11 +10,12 @@ This creates `config/document-scanner.php`:
 
 ```php
 return [
-    'default_max_pages'     => 0,
-    'max_pages_limit'       => 100,
-    'default_output_format' => 'jpeg',
-    'default_jpeg_quality'  => 90,
-    'storage_directory'     => 'scanned-documents',
+    'default_max_pages'      => 0,
+    'max_pages_limit'        => 100,
+    'default_output_format'  => 'jpeg',
+    'default_jpeg_quality'   => 90,
+    'storage_directory'      => 'scanned-documents',
+    'default_gallery_import' => false,
 ];
 ```
 
@@ -69,6 +70,15 @@ JPEG compression quality. Higher values produce better quality but larger files.
 
 Subdirectory within the app's storage where scanned files are saved. On Android this is relative to `context.filesDir`, on iOS to the app's documents directory.
 
+### `default_gallery_import`
+
+|             |         |
+| ----------- | ------- |
+| **Type**    | `bool`  |
+| **Default** | `false` |
+
+Whether to allow importing images from the device gallery in addition to live camera scanning. When enabled, the scanner UI shows a gallery button. **Android only** — iOS VisionKit does not support gallery import.
+
 ## Overriding Per Scan
 
 Config values are defaults. You can override them on each scan call:
@@ -92,6 +102,7 @@ config('document-scanner.max_pages_limit');         // 100
 config('document-scanner.default_output_format');   // 'jpeg'
 config('document-scanner.default_jpeg_quality');    // 90
 config('document-scanner.storage_directory');        // 'scanned-documents'
+config('document-scanner.default_gallery_import');   // false
 ```
 
 ## Environment-Specific Config

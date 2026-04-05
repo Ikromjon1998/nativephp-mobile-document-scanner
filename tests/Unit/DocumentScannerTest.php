@@ -142,7 +142,37 @@ describe('scan', function (): void {
             'default_jpeg_quality' => 90,
             'max_pages_limit' => 100,
             'storage_directory' => 'scanned-documents',
+            'default_gallery_import' => false,
         ]);
+    });
+
+    it('passes galleryImport to bridge call', function (): void {
+        $capturedData = null;
+
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+            $capturedData = json_decode($data, true);
+
+            return json_encode(['success' => true]);
+        });
+
+        $this->scanner->scan(['galleryImport' => true]);
+
+        expect($capturedData['galleryImport'])->toBeTrue();
+    });
+
+    it('passes galleryImport via ScanOptions DTO', function (): void {
+        $capturedData = null;
+
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+            $capturedData = json_decode($data, true);
+
+            return json_encode(['success' => true]);
+        });
+
+        $this->scanner->scan(new ScanOptions(galleryImport: true));
+
+        unset($capturedData['_config']);
+        expect($capturedData)->toHaveKey('galleryImport', true);
     });
 
     it('throws when outputFormat is invalid', function (): void {
@@ -168,4 +198,10 @@ describe('scan', function (): void {
 
         $this->scanner->scan(['maxPages' => -1]);
     })->throws(InvalidArgumentException::class, 'maxPages must be 0 (unlimited) or a positive integer.');
+
+    it('throws when galleryImport is not boolean', function (): void {
+        stubNativephpCall(fn () => json_encode(['success' => true]));
+
+        $this->scanner->scan(['galleryImport' => 'yes']);
+    })->throws(InvalidArgumentException::class, 'galleryImport must be a boolean.');
 });

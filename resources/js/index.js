@@ -42,6 +42,7 @@ async function bridgeCall(method, params = {}) {
  * @param {number} [options.maxPages=0] - Max pages to scan (0 = unlimited)
  * @param {string} [options.outputFormat='jpeg'] - Output format: 'jpeg' or 'pdf'
  * @param {number} [options.jpegQuality=90] - JPEG quality (1-100)
+ * @param {boolean} [options.galleryImport=false] - Allow gallery import (Android only)
  * @returns {Promise<{success: boolean, error?: string}>}
  */
 export async function scan(options = {}) {

@@ -1,7 +1,7 @@
 # Epic 1: Gallery Import
 
 **Priority:** High
-**Status:** Not Started
+**Status:** Done
 
 ## Goal
 
@@ -13,14 +13,14 @@ Android ML Kit's `GmsDocumentScannerOptions` supports `setGalleryImportAllowed(t
 
 ## Acceptance Criteria
 
-- [ ] New `galleryImport` parameter in `ScanOptions` DTO (default: `false`)
-- [ ] PHP validation allows boolean `galleryImport` option
-- [ ] Android passes `setGalleryImportAllowed()` based on parameter
-- [ ] iOS ignores the parameter gracefully (no error)
-- [ ] Config option `default_gallery_import` added to publishable config
-- [ ] JS `scan()` accepts `galleryImport` option
-- [ ] Tests cover the new parameter
-- [ ] Documentation updated
+- [x] New `galleryImport` parameter in `ScanOptions` DTO (default: `false`)
+- [x] PHP validation allows boolean `galleryImport` option
+- [x] Android passes `setGalleryImportAllowed()` based on parameter
+- [x] iOS ignores the parameter gracefully (no error)
+- [x] Config option `default_gallery_import` added to publishable config
+- [x] JS `scan()` accepts `galleryImport` option
+- [x] Tests cover the new parameter
+- [x] Documentation updated
 
 ## Implementation Steps
 

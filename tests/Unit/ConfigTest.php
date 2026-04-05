@@ -11,7 +11,8 @@ describe('config defaults', function (): void {
             ->and(config('document-scanner.max_pages_limit'))->toBe(100)
             ->and(config('document-scanner.default_output_format'))->toBe('jpeg')
             ->and(config('document-scanner.default_jpeg_quality'))->toBe(90)
-            ->and(config('document-scanner.storage_directory'))->toBe('scanned-documents');
+            ->and(config('document-scanner.storage_directory'))->toBe('scanned-documents')
+            ->and(config('document-scanner.default_gallery_import'))->toBeFalse();
     });
 });
 
@@ -44,6 +45,12 @@ describe('config overrides', function (): void {
         config(['document-scanner.storage_directory' => 'custom-scans']);
 
         expect(config('document-scanner.storage_directory'))->toBe('custom-scans');
+    });
+
+    it('allows overriding default_gallery_import', function (): void {
+        config(['document-scanner.default_gallery_import' => true]);
+
+        expect(config('document-scanner.default_gallery_import'))->toBeTrue();
     });
 });
 
@@ -106,6 +113,21 @@ describe('config flows to bridge', function (): void {
         (new DocumentScanner)->scan();
 
         expect($capturedData['_config']['storage_directory'])->toBe('custom-dir');
+    });
+
+    it('injects overridden default_gallery_import into _config', function (): void {
+        config(['document-scanner.default_gallery_import' => true]);
+
+        $capturedData = null;
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+            $capturedData = json_decode($data, true);
+
+            return json_encode(['success' => true]);
+        });
+
+        (new DocumentScanner)->scan();
+
+        expect($capturedData['_config']['default_gallery_import'])->toBeTrue();
     });
 });
 
