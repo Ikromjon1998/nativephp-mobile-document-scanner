@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Ikromjon\DocumentScanner\Data\ScanOptions;
 use Ikromjon\DocumentScanner\DocumentScanner;
 use Ikromjon\DocumentScanner\Enums\OutputFormat;
+use Ikromjon\DocumentScanner\Enums\ScannerMode;
 
 beforeEach(function (): void {
     $this->scanner = new DocumentScanner;
@@ -50,14 +51,12 @@ describe('scan', function (): void {
         $this->scanner->scan(new ScanOptions(
             maxPages: 3,
             outputFormat: OutputFormat::Pdf,
-            jpegQuality: 90,
         ));
 
         unset($capturedData['_config']);
         expect($capturedData)->toBe([
             'maxPages' => 3,
             'outputFormat' => 'pdf',
-            'jpegQuality' => 90,
         ]);
     });
 
@@ -143,6 +142,7 @@ describe('scan', function (): void {
             'max_pages_limit' => 100,
             'storage_directory' => 'scanned-documents',
             'default_gallery_import' => false,
+            'default_scanner_mode' => 'full',
         ]);
     });
 
@@ -204,4 +204,38 @@ describe('scan', function (): void {
 
         $this->scanner->scan(['galleryImport' => 'yes']);
     })->throws(InvalidArgumentException::class, 'galleryImport must be a boolean.');
+
+    it('passes scannerMode to bridge call', function (): void {
+        $capturedData = null;
+
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+            $capturedData = json_decode($data, true);
+
+            return json_encode(['success' => true]);
+        });
+
+        $this->scanner->scan(['scannerMode' => 'base']);
+
+        expect($capturedData['scannerMode'])->toBe('base');
+    });
+
+    it('converts ScannerMode enum to string', function (): void {
+        $capturedData = null;
+
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+            $capturedData = json_decode($data, true);
+
+            return json_encode(['success' => true]);
+        });
+
+        $this->scanner->scan(['scannerMode' => ScannerMode::Filter]);
+
+        expect($capturedData['scannerMode'])->toBe('filter');
+    });
+
+    it('throws when scannerMode is invalid', function (): void {
+        stubNativephpCall(fn () => json_encode(['success' => true]));
+
+        $this->scanner->scan(['scannerMode' => 'turbo']);
+    })->throws(InvalidArgumentException::class, 'scannerMode must be "base", "filter", or "full".');
 });

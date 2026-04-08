@@ -75,4 +75,17 @@ return [
 
     'default_gallery_import' => false,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Default Scanner Mode
+    |--------------------------------------------------------------------------
+    |
+    | The ML Kit scanner processing mode. Supported values:
+    | 'base' (fast, minimal processing), 'filter' (adds color filters),
+    | 'full' (ML-enhanced cleaning). Android only — iOS always uses full.
+    |
+    */
+
+    'default_scanner_mode' => 'full',
+
 ];

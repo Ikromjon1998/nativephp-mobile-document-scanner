@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ikromjon\DocumentScanner\Data;
 
 use Ikromjon\DocumentScanner\Enums\OutputFormat;
+use Ikromjon\DocumentScanner\Enums\ScannerMode;
 use Ikromjon\DocumentScanner\Validation\ScanValidator;
 
 final readonly class ScanOptions
@@ -14,6 +15,7 @@ final readonly class ScanOptions
         public OutputFormat|string $outputFormat = OutputFormat::Jpeg,
         public int $jpegQuality = 90,
         public bool $galleryImport = false,
+        public ScannerMode|string $scannerMode = ScannerMode::Full,
     ) {}
 
     /**
@@ -29,14 +31,26 @@ final readonly class ScanOptions
             $data['maxPages'] = $this->maxPages;
         }
 
-        $data['outputFormat'] = $this->outputFormat instanceof OutputFormat
+        $outputFormat = $this->outputFormat instanceof OutputFormat
             ? $this->outputFormat->value
             : $this->outputFormat;
+        if ($outputFormat !== OutputFormat::Jpeg->value) {
+            $data['outputFormat'] = $outputFormat;
+        }
 
-        $data['jpegQuality'] = $this->jpegQuality;
+        if ($this->jpegQuality !== 90) {
+            $data['jpegQuality'] = $this->jpegQuality;
+        }
 
         if ($this->galleryImport) {
             $data['galleryImport'] = true;
+        }
+
+        $scannerMode = $this->scannerMode instanceof ScannerMode
+            ? $this->scannerMode->value
+            : $this->scannerMode;
+        if ($scannerMode !== ScannerMode::Full->value) {
+            $data['scannerMode'] = $scannerMode;
         }
 
         ScanValidator::validate($data);

@@ -25,11 +25,13 @@ await scan({ maxPages: 1, jpegQuality: 95 }); // high-quality single page
 
 **Parameters:**
 
-| Option         | Type   | Default  | Description               |
-| -------------- | ------ | -------- | ------------------------- |
-| `maxPages`     | number | `0`      | Max pages (0 = unlimited) |
-| `outputFormat` | string | `'jpeg'` | `'jpeg'` or `'pdf'`       |
-| `jpegQuality`  | number | `90`     | JPEG quality 1-100        |
+| Option         | Type    | Default  | Description                                    |
+| -------------- | ------- | -------- | ---------------------------------------------- |
+| `maxPages`     | number  | `0`      | Max pages (0 = unlimited)                      |
+| `outputFormat` | string  | `'jpeg'` | `'jpeg'` or `'pdf'`                            |
+| `jpegQuality`  | number  | `90`     | JPEG quality 1-100                             |
+| `galleryImport`| boolean | `false`  | Allow gallery import (Android only)            |
+| `scannerMode`  | string  | `'full'` | `'base'`, `'filter'`, or `'full'` (Android only) |
 
 ### `Events`
 

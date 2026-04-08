@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Ikromjon\DocumentScanner\Validation;
 
+use Ikromjon\DocumentScanner\Enums\OutputFormat;
+use Ikromjon\DocumentScanner\Enums\ScannerMode;
+
 final class ScanValidator
 {
     /**
@@ -24,11 +27,8 @@ final class ScanValidator
             }
         }
 
-        if (isset($options['outputFormat'])) {
-            $valid = ['jpeg', 'pdf'];
-            if (! in_array($options['outputFormat'], $valid, true)) {
-                throw new \InvalidArgumentException('outputFormat must be "jpeg" or "pdf".');
-            }
+        if (isset($options['outputFormat']) && OutputFormat::tryFrom($options['outputFormat']) === null) {
+            throw new \InvalidArgumentException('outputFormat must be "jpeg" or "pdf".');
         }
 
         if (isset($options['jpegQuality']) && ($options['jpegQuality'] < 1 || $options['jpegQuality'] > 100)) {
@@ -37,6 +37,10 @@ final class ScanValidator
 
         if (isset($options['galleryImport']) && ! is_bool($options['galleryImport'])) {
             throw new \InvalidArgumentException('galleryImport must be a boolean.');
+        }
+
+        if (isset($options['scannerMode']) && ScannerMode::tryFrom($options['scannerMode']) === null) {
+            throw new \InvalidArgumentException('scannerMode must be "base", "filter", or "full".');
         }
     }
 

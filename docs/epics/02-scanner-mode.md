@@ -1,7 +1,7 @@
 # Epic 2: Scanner Mode Selection
 
 **Priority:** Medium
-**Status:** Not Started
+**Status:** Done
 
 ## Goal
 
@@ -18,15 +18,15 @@ iOS VisionKit doesn't have equivalent modes — it always applies full processin
 
 ## Acceptance Criteria
 
-- [ ] New `ScannerMode` enum with `Base`, `Filter`, `Full` cases
-- [ ] New `scannerMode` parameter in `ScanOptions` DTO (default: `Full`)
-- [ ] PHP validation accepts valid mode strings
-- [ ] Android maps mode to `GmsDocumentScannerOptions` constant
-- [ ] iOS ignores the parameter gracefully
-- [ ] Config option `default_scanner_mode` added
-- [ ] JS `scan()` accepts `scannerMode` option
-- [ ] Tests cover all three modes
-- [ ] Documentation updated
+- [x] New `ScannerMode` enum with `Base`, `Filter`, `Full` cases
+- [x] New `scannerMode` parameter in `ScanOptions` DTO (default: `Full`)
+- [x] PHP validation accepts valid mode strings
+- [x] Android maps mode to `GmsDocumentScannerOptions` constant
+- [x] iOS ignores the parameter gracefully
+- [x] Config option `default_scanner_mode` added
+- [x] JS `scan()` accepts `scannerMode` option
+- [x] Tests cover all three modes
+- [x] Documentation updated
 
 ## Implementation Steps
 

@@ -131,3 +131,27 @@ describe('galleryImport validation', function (): void {
         ScanValidator::validate(['galleryImport' => 1]);
     })->throws(InvalidArgumentException::class, 'galleryImport must be a boolean.');
 });
+
+describe('scannerMode validation', function (): void {
+    it('allows base', function (): void {
+        ScanValidator::validate(['scannerMode' => 'base']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('allows filter', function (): void {
+        ScanValidator::validate(['scannerMode' => 'filter']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('allows full', function (): void {
+        ScanValidator::validate(['scannerMode' => 'full']);
+
+        expect(true)->toBeTrue();
+    });
+
+    it('throws for invalid mode', function (): void {
+        ScanValidator::validate(['scannerMode' => 'turbo']);
+    })->throws(InvalidArgumentException::class, 'scannerMode must be "base", "filter", or "full".');
+});
