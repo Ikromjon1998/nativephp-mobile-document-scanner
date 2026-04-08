@@ -1,7 +1,7 @@
 # Epic 9: README Quick-Start Improvement
 
 **Priority:** High
-**Status:** Not Started
+**Status:** Done
 
 ## Goal
 

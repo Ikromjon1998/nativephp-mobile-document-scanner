@@ -10,6 +10,18 @@ use Ikromjon\DocumentScanner\Facades\DocumentScanner;
 
 Opens the native document scanner UI. Returns immediately — results arrive via events.
 
+When called without the native bridge (e.g., `php artisan serve`), logs a warning and returns `[]`.
+
+### `isAvailable(): bool`
+
+Returns `true` when the NativePHP native bridge is available (running as a native build). Returns `false` in browser, `php artisan serve`, or tests without stubs.
+
+```php
+if (DocumentScanner::isAvailable()) {
+    DocumentScanner::scan();
+}
+```
+
 ```php
 // With defaults
 DocumentScanner::scan();

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-04-08
+
+### Added
+
+- `DocumentScanner::isAvailable()` method to check if native bridge is available at runtime
+- Warning log when `scan()` is called outside a NativePHP native build
+- Troubleshooting section in installation docs
+- Quick-start example at the top of README for faster onboarding
+- Platform column in scan parameters table to clarify Android-only options
+
 ## [1.2.0] - 2026-04-05
 
 ### Added
