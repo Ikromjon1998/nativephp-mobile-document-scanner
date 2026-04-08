@@ -18,15 +18,11 @@ describe('ScanOptions', function (): void {
             ->and($options->scannerMode)->toBe(ScannerMode::Full);
     });
 
-    it('converts to array with defaults', function (): void {
+    it('converts to array with defaults as empty', function (): void {
         $options = new ScanOptions;
         $array = $options->toArray();
 
-        expect($array)->toBe([
-            'outputFormat' => 'jpeg',
-            'jpegQuality' => 90,
-            'scannerMode' => 'full',
-        ]);
+        expect($array)->toBe([]);
     });
 
     it('includes maxPages when greater than 0', function (): void {
@@ -57,11 +53,25 @@ describe('ScanOptions', function (): void {
         expect($array['outputFormat'])->toBe('pdf');
     });
 
-    it('includes jpegQuality', function (): void {
+    it('excludes outputFormat when default jpeg', function (): void {
+        $options = new ScanOptions(outputFormat: OutputFormat::Jpeg);
+        $array = $options->toArray();
+
+        expect($array)->not->toHaveKey('outputFormat');
+    });
+
+    it('includes jpegQuality when non-default', function (): void {
         $options = new ScanOptions(jpegQuality: 75);
         $array = $options->toArray();
 
         expect($array['jpegQuality'])->toBe(75);
+    });
+
+    it('excludes jpegQuality when default 90', function (): void {
+        $options = new ScanOptions(jpegQuality: 90);
+        $array = $options->toArray();
+
+        expect($array)->not->toHaveKey('jpegQuality');
     });
 
     it('throws when jpegQuality is below 1', function (): void {
@@ -105,6 +115,13 @@ describe('ScanOptions', function (): void {
         $array = $options->toArray();
 
         expect($array['scannerMode'])->toBe('filter');
+    });
+
+    it('excludes scannerMode when default full', function (): void {
+        $options = new ScanOptions(scannerMode: ScannerMode::Full);
+        $array = $options->toArray();
+
+        expect($array)->not->toHaveKey('scannerMode');
     });
 
     it('throws when scannerMode is invalid string', function (): void {

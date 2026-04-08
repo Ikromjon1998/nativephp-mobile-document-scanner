@@ -51,15 +51,12 @@ describe('scan', function (): void {
         $this->scanner->scan(new ScanOptions(
             maxPages: 3,
             outputFormat: OutputFormat::Pdf,
-            jpegQuality: 90,
         ));
 
         unset($capturedData['_config']);
         expect($capturedData)->toBe([
             'maxPages' => 3,
             'outputFormat' => 'pdf',
-            'jpegQuality' => 90,
-            'scannerMode' => 'full',
         ]);
     });
 

@@ -31,19 +31,27 @@ final readonly class ScanOptions
             $data['maxPages'] = $this->maxPages;
         }
 
-        $data['outputFormat'] = $this->outputFormat instanceof OutputFormat
+        $outputFormat = $this->outputFormat instanceof OutputFormat
             ? $this->outputFormat->value
             : $this->outputFormat;
+        if ($outputFormat !== OutputFormat::Jpeg->value) {
+            $data['outputFormat'] = $outputFormat;
+        }
 
-        $data['jpegQuality'] = $this->jpegQuality;
+        if ($this->jpegQuality !== 90) {
+            $data['jpegQuality'] = $this->jpegQuality;
+        }
 
         if ($this->galleryImport) {
             $data['galleryImport'] = true;
         }
 
-        $data['scannerMode'] = $this->scannerMode instanceof ScannerMode
+        $scannerMode = $this->scannerMode instanceof ScannerMode
             ? $this->scannerMode->value
             : $this->scannerMode;
+        if ($scannerMode !== ScannerMode::Full->value) {
+            $data['scannerMode'] = $scannerMode;
+        }
 
         ScanValidator::validate($data);
 
