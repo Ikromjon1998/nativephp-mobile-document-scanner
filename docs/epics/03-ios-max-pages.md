@@ -1,6 +1,6 @@
 # Epic 3: iOS Max Pages Enforcement
 
-**Priority:** Medium
+**Priority:** Low
 **Status:** Not Started
 
 ## Goal

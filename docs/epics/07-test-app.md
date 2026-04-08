@@ -1,6 +1,6 @@
 # Epic 7: Real Device Test App
 
-**Priority:** Medium
+**Priority:** Low
 **Status:** Not Started
 
 ## Goal

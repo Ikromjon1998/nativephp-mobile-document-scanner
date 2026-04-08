@@ -1,6 +1,6 @@
 # Epic 4: Scanned File Management
 
-**Priority:** Medium
+**Priority:** Low
 **Status:** Not Started
 
 ## Goal

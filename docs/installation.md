@@ -45,11 +45,13 @@ This creates `config/document-scanner.php` where you can customize defaults:
 
 ```php
 return [
-    'default_max_pages'     => 0,                  // 0 = unlimited
-    'max_pages_limit'       => 100,                // absolute cap
-    'default_output_format' => 'jpeg',             // 'jpeg' or 'pdf'
-    'default_jpeg_quality'  => 90,                 // 1-100
-    'storage_directory'     => 'scanned-documents', // where files are saved
+    'default_max_pages'      => 0,                  // 0 = unlimited
+    'max_pages_limit'        => 100,                // absolute cap
+    'default_output_format'  => 'jpeg',             // 'jpeg' or 'pdf'
+    'default_jpeg_quality'   => 90,                 // 1-100
+    'storage_directory'      => 'scanned-documents', // where files are saved
+    'default_gallery_import' => false,              // Android only
+    'default_scanner_mode'   => 'full',             // Android only: 'base', 'filter', 'full'
 ];
 ```
 

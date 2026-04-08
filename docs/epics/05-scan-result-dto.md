@@ -1,6 +1,6 @@
 # Epic 5: Scan Result DTO
 
-**Priority:** Medium
+**Priority:** Low
 **Status:** Not Started
 
 ## Goal

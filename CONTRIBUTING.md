@@ -39,7 +39,7 @@ src/                        # PHP source code
   Events/                   # Laravel events dispatched by native code
   Contracts/                # Interface definitions
   Facades/                  # Laravel facade
-  Enums/                    # OutputFormat enum
+  Enums/                    # OutputFormat, ScannerMode enums
 
 resources/
   android/src/              # Kotlin native code (Android)
