@@ -238,4 +238,21 @@ describe('scan', function (): void {
 
         $this->scanner->scan(['scannerMode' => 'turbo']);
     })->throws(InvalidArgumentException::class, 'scannerMode must be "base", "filter", or "full".');
+
+    it('returns empty array when payload cannot be json encoded', function (): void {
+        stubNativephpCall(fn () => json_encode(['success' => true]));
+
+        // Invalid UTF-8 triggers json_encode to return false
+        $scanner = new class extends DocumentScanner
+        {
+            protected function nativeConfig(): array
+            {
+                return ['bad' => "\xB1\x31"];
+            }
+        };
+
+        $result = $scanner->scan();
+
+        expect($result)->toBe([]);
+    });
 });
