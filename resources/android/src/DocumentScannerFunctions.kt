@@ -8,8 +8,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
-import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
+import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.nativephp.mobile.bridge.BridgeFunction
 import com.nativephp.mobile.utils.NativeActionCoordinator
@@ -50,7 +50,11 @@ object DocumentScannerFunctions {
         return dir
     }
 
-    private fun dispatchEvent(activity: FragmentActivity, event: String, payload: JSONObject) {
+    private fun dispatchEvent(
+        activity: FragmentActivity,
+        event: String,
+        payload: JSONObject,
+    ) {
         activity.runOnUiThread {
             NativeActionCoordinator.dispatchEvent(activity, event, payload.toString())
         }
@@ -59,23 +63,27 @@ object DocumentScannerFunctions {
     fun registerLauncher(activity: FragmentActivity) {
         if (scannerLauncher != null) return
 
-        scannerLauncher = activity.registerForActivityResult(
-            ActivityResultContracts.StartIntentSenderForResult()
-        ) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                handleScanResult(activity, result.data)
-            } else {
-                val payload = JSONObject()
-                dispatchEvent(
-                    activity,
-                    "Ikromjon\\DocumentScanner\\Events\\ScanCancelled",
-                    payload
-                )
+        scannerLauncher =
+            activity.registerForActivityResult(
+                ActivityResultContracts.StartIntentSenderForResult(),
+            ) { result: ActivityResult ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    handleScanResult(activity, result.data)
+                } else {
+                    val payload = JSONObject()
+                    dispatchEvent(
+                        activity,
+                        "Ikromjon\\DocumentScanner\\Events\\ScanCancelled",
+                        payload,
+                    )
+                }
             }
-        }
     }
 
-    private fun handleScanResult(activity: FragmentActivity, data: Intent?) {
+    private fun handleScanResult(
+        activity: FragmentActivity,
+        data: Intent?,
+    ) {
         val scanResult = GmsDocumentScanningResult.fromActivityResultIntent(data)
 
         if (scanResult == null) {
@@ -83,7 +91,7 @@ object DocumentScannerFunctions {
             dispatchEvent(
                 activity,
                 "Ikromjon\\DocumentScanner\\Events\\ScanFailed",
-                payload
+                payload,
             )
             return
         }
@@ -94,7 +102,7 @@ object DocumentScannerFunctions {
 
         if (currentOutputFormat == "pdf") {
             scanResult.pdf?.let { pdf ->
-                val destFile = File(dir, "scan_${timestamp}.pdf")
+                val destFile = File(dir, "scan_$timestamp.pdf")
                 pdf.uri.let { uri ->
                     activity.contentResolver.openInputStream(uri)?.use { input ->
                         FileOutputStream(destFile).use { output ->
@@ -106,7 +114,7 @@ object DocumentScannerFunctions {
             }
         } else {
             scanResult.pages?.forEachIndexed { index, page ->
-                val destFile = File(dir, "scan_${timestamp}_${index}.jpg")
+                val destFile = File(dir, "scan_${timestamp}_$index.jpg")
                 page.imageUri.let { uri ->
                     activity.contentResolver.openInputStream(uri)?.use { input ->
                         FileOutputStream(destFile).use { output ->
@@ -118,25 +126,29 @@ object DocumentScannerFunctions {
             }
         }
 
-        val pageCount = if (currentOutputFormat == "pdf") {
-            scanResult.pages?.size ?: 1
-        } else {
-            scanResult.pages?.size ?: 0
-        }
+        val pageCount =
+            if (currentOutputFormat == "pdf") {
+                scanResult.pages?.size ?: 1
+            } else {
+                scanResult.pages?.size ?: 0
+            }
 
-        val payload = JSONObject()
-            .put("paths", paths)
-            .put("pageCount", pageCount)
-            .put("outputFormat", currentOutputFormat)
+        val payload =
+            JSONObject()
+                .put("paths", paths)
+                .put("pageCount", pageCount)
+                .put("outputFormat", currentOutputFormat)
 
         dispatchEvent(
             activity,
             "Ikromjon\\DocumentScanner\\Events\\DocumentScanned",
-            payload
+            payload,
         )
     }
 
-    class Scan(private val activity: FragmentActivity) : BridgeFunction {
+    class Scan(
+        private val activity: FragmentActivity,
+    ) : BridgeFunction {
         init {
             registerLauncher(activity)
         }
@@ -153,24 +165,27 @@ object DocumentScannerFunctions {
 
             currentOutputFormat = outputFormat
 
-            val mode = when (scannerMode) {
-                "base" -> GmsDocumentScannerOptions.SCANNER_MODE_BASE
-                "filter" -> GmsDocumentScannerOptions.SCANNER_MODE_BASE_WITH_FILTER
-                else -> GmsDocumentScannerOptions.SCANNER_MODE_FULL
-            }
+            val mode =
+                when (scannerMode) {
+                    "base" -> GmsDocumentScannerOptions.SCANNER_MODE_BASE
+                    "filter" -> GmsDocumentScannerOptions.SCANNER_MODE_BASE_WITH_FILTER
+                    else -> GmsDocumentScannerOptions.SCANNER_MODE_FULL
+                }
 
-            val optionsBuilder = GmsDocumentScannerOptions.Builder()
-                .setGalleryImportAllowed(galleryImport)
-                .setScannerMode(mode)
+            val optionsBuilder =
+                GmsDocumentScannerOptions
+                    .Builder()
+                    .setGalleryImportAllowed(galleryImport)
+                    .setScannerMode(mode)
 
             if (outputFormat == "pdf") {
                 optionsBuilder.setResultFormats(
                     GmsDocumentScannerOptions.RESULT_FORMAT_PDF,
-                    GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
+                    GmsDocumentScannerOptions.RESULT_FORMAT_JPEG,
                 )
             } else {
                 optionsBuilder.setResultFormats(
-                    GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
+                    GmsDocumentScannerOptions.RESULT_FORMAT_JPEG,
                 )
             }
 
@@ -180,19 +195,19 @@ object DocumentScannerFunctions {
 
             val scanner = GmsDocumentScanning.getClient(optionsBuilder.build())
 
-            scanner.getStartScanIntent(activity)
+            scanner
+                .getStartScanIntent(activity)
                 .addOnSuccessListener { intentSender ->
                     scannerLauncher?.launch(
-                        IntentSenderRequest.Builder(intentSender).build()
+                        IntentSenderRequest.Builder(intentSender).build(),
                     )
-                }
-                .addOnFailureListener { e ->
+                }.addOnFailureListener { e ->
                     Log.e(TAG, "Failed to start scanner", e)
                     val payload = JSONObject().put("error", e.localizedMessage ?: "Failed to start scanner")
                     dispatchEvent(
                         activity,
                         "Ikromjon\\DocumentScanner\\Events\\ScanFailed",
-                        payload
+                        payload,
                     )
                 }
 
