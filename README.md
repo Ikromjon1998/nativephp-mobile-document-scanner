@@ -19,10 +19,10 @@ use Ikromjon\DocumentScanner\Facades\DocumentScanner;
 use Ikromjon\DocumentScanner\Events\DocumentScanned;
 use Native\Mobile\Attributes\OnNative;
 
-// Open the scanner
+// In your Livewire component:
 DocumentScanner::scan();
 
-// Handle the result
+// Handle the result (Livewire method)
 #[OnNative(DocumentScanned::class)]
 public function onScanned($data)
 {
