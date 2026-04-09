@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static array<string, mixed> scan(ScanOptions|array<string, mixed> $options = [])
- * @method static bool isAvailable()
  *
  * @see \Ikromjon\DocumentScanner\DocumentScanner
  */

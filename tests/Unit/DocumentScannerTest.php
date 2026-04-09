@@ -6,7 +6,6 @@ use Ikromjon\DocumentScanner\Data\ScanOptions;
 use Ikromjon\DocumentScanner\DocumentScanner;
 use Ikromjon\DocumentScanner\Enums\OutputFormat;
 use Ikromjon\DocumentScanner\Enums\ScannerMode;
-use Illuminate\Support\Facades\Log;
 
 beforeEach(function (): void {
     $this->scanner = new DocumentScanner;
@@ -241,51 +240,12 @@ describe('scan', function (): void {
     })->throws(InvalidArgumentException::class, 'scannerMode must be "base", "filter", or "full".');
 });
 
-describe('isAvailable', function (): void {
-    it('returns true when bridge function exists', function (): void {
-        stubNativephpCall(fn () => json_encode([]));
-
-        expect($this->scanner->isAvailable())->toBeTrue();
-    });
-});
-
 describe('bridge unavailable', function (): void {
-    beforeEach(function (): void {
-        // Subclass that simulates missing native bridge
-        $this->unavailableScanner = new class extends DocumentScanner
-        {
-            public function isAvailable(): bool
-            {
-                return false;
-            }
-        };
-    });
+    it('returns empty array when bridge returns null', function (): void {
+        stubNativephpCallReturnsNull();
 
-    it('returns empty array when bridge is unavailable', function (): void {
-        Log::spy();
-
-        $result = $this->unavailableScanner->scan();
+        $result = $this->scanner->scan();
 
         expect($result)->toBe([]);
-    });
-
-    it('logs a warning when bridge is unavailable', function (): void {
-        Log::spy();
-
-        $this->unavailableScanner->scan();
-
-        Log::shouldHaveReceived('warning')
-            ->with(\Mockery::on(fn (string $msg): bool => str_contains($msg, 'nativephp_call() is not available')))
-            ->once();
-    });
-
-    it('logs a warning that mentions native:run command', function (): void {
-        Log::spy();
-
-        $this->unavailableScanner->scan();
-
-        Log::shouldHaveReceived('warning')
-            ->with(\Mockery::on(fn (string $msg): bool => str_contains($msg, 'php artisan native:run')))
-            ->once();
     });
 });

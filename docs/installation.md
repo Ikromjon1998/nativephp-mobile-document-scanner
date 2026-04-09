@@ -84,16 +84,6 @@ DocumentScanner: nativephp_call() is not available. The document scanner require
 
 **Fix:** Run `php artisan native:run android` or `php artisan native:run ios`.
 
-You can also check programmatically:
-
-```php
-if (DocumentScanner::isAvailable()) {
-    DocumentScanner::scan();
-} else {
-    // Running outside native build
-}
-```
-
 ### No events received after scanning
 
 - Verify your Livewire component uses `#[OnNative(DocumentScanned::class)]` (not `#[On]`)

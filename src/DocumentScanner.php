@@ -13,14 +13,6 @@ use Ikromjon\DocumentScanner\Validation\ScanValidator;
 class DocumentScanner implements DocumentScannerInterface
 {
     /**
-     * Check whether the native bridge is available.
-     */
-    public function isAvailable(): bool
-    {
-        return function_exists('nativephp_call');
-    }
-
-    /**
      * Open the document scanner.
      *
      * @param  ScanOptions|array<string, mixed>  $options
@@ -89,28 +81,6 @@ class DocumentScanner implements DocumentScannerInterface
     }
 
     /**
-     * Log a warning message if a logger is available.
-     */
-    protected function logWarning(string $message): void
-    {
-        if (function_exists('logger')) {
-            logger()->warning($message);
-        }
-    }
-
-    /**
-     * Execute a native bridge call, returning null when the bridge is unavailable.
-     */
-    protected function bridgeCall(string $function, string $data): mixed
-    {
-        if (! function_exists('nativephp_call')) {
-            return null;
-        }
-
-        return nativephp_call($function, $data);
-    }
-
-    /**
      * Make a bridge call to the native layer.
      *
      * @param  array<string, mixed>  $data
@@ -118,19 +88,21 @@ class DocumentScanner implements DocumentScannerInterface
      */
     protected function call(string $function, array $data = []): array
     {
-        if (! $this->isAvailable()) {
-            $this->logWarning(
-                'DocumentScanner: nativephp_call() is not available. '
-                .'The document scanner requires a NativePHP native build. '
-                .'Run: php artisan native:run android|ios'
-            );
+        if (! function_exists('nativephp_call')) {
+            if (function_exists('logger')) {
+                logger()->warning(
+                    'DocumentScanner: nativephp_call() is not available. '
+                    .'The document scanner requires a NativePHP native build. '
+                    .'Run: php artisan native:run android|ios'
+                );
+            }
 
             return [];
         }
 
         $data['_config'] = $this->nativeConfig();
 
-        $result = $this->bridgeCall($function, (string) json_encode($data));
+        $result = nativephp_call($function, (string) json_encode($data));
 
         if (! $result) {
             return [];

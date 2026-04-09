@@ -15,12 +15,4 @@ interface DocumentScannerInterface
      * @return array<string, mixed>
      */
     public function scan(ScanOptions|array $options = []): array;
-
-    /**
-     * Check whether the native bridge is available.
-     *
-     * Returns false when running outside a NativePHP native build
-     * (e.g. php artisan serve, browser, or tests without stubs).
-     */
-    public function isAvailable(): bool;
 }

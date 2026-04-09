@@ -29,9 +29,3 @@ it('proxies scan with no options', function (): void {
 
     expect($result)->toBe(['success' => true]);
 });
-
-it('proxies isAvailable calls', function (): void {
-    stubNativephpCall(fn () => json_encode([]));
-
-    expect(DocumentScanner::isAvailable())->toBeTrue();
-});

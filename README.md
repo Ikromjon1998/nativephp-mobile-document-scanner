@@ -57,15 +57,7 @@ php artisan native:run android
 php artisan native:run ios
 ```
 
-> **Note:** The scanner won't work with `php artisan serve`. You need a native build on a real device. If you call `scan()` without a native build, you'll see a warning in your Laravel log.
-
-You can check at runtime whether the native bridge is available:
-
-```php
-if (DocumentScanner::isAvailable()) {
-    DocumentScanner::scan();
-}
-```
+> **Note:** The scanner requires a native build on a real device — it won't work with `php artisan serve`. If you call `scan()` without a native build, you'll see a warning in your Laravel log.
 
 ## Configuration
 
@@ -133,34 +125,49 @@ DocumentScanner::scan(new ScanOptions(
 | `galleryImport` | bool                 | Android only | Allow importing from device gallery       |
 | `scannerMode`   | ScannerMode\|string  | Android only | `base`, `filter`, or `full`               |
 
-## Listening to Events (Livewire)
+## Full Livewire Example
+
+A complete component that scans documents and displays the results:
 
 ```php
+use Livewire\Component;
 use Native\Mobile\Attributes\OnNative;
+use Ikromjon\DocumentScanner\Facades\DocumentScanner;
 use Ikromjon\DocumentScanner\Events\DocumentScanned;
 use Ikromjon\DocumentScanner\Events\ScanCancelled;
 use Ikromjon\DocumentScanner\Events\ScanFailed;
 
-#[OnNative(DocumentScanned::class)]
-public function onScanned($data)
+class DocumentScannerComponent extends Component
 {
-    // $data['paths'] — array of file paths
-    // $data['pageCount'] — number of pages scanned
-    // $data['outputFormat'] — 'jpeg' or 'pdf'
-}
+    public array $scannedFiles = [];
+    public string $error = '';
 
-#[OnNative(ScanCancelled::class)]
-public function onCancelled()
-{
-    // User cancelled the scanner
-}
+    public function scan()
+    {
+        DocumentScanner::scan(['maxPages' => 5]);
+    }
 
-#[OnNative(ScanFailed::class)]
-public function onFailed($data)
-{
-    // $data['error'] — error message
+    #[OnNative(DocumentScanned::class)]
+    public function onScanned($data)
+    {
+        $this->scannedFiles = $data['paths'];
+    }
+
+    #[OnNative(ScanCancelled::class)]
+    public function onCancelled()
+    {
+        // User dismissed the scanner
+    }
+
+    #[OnNative(ScanFailed::class)]
+    public function onFailed($data)
+    {
+        $this->error = $data['error'];
+    }
 }
 ```
+
+> **Important:** Use `#[OnNative(...)]` (not `#[On(...)]`) for NativePHP events.
 
 ## Listening to Events (Laravel)
 
@@ -209,16 +216,36 @@ On(Events.ScanFailed, (payload) => {
 | Event             | Payload                              | When                            |
 | ----------------- | ------------------------------------ | ------------------------------- |
 | `DocumentScanned` | `paths`, `pageCount`, `outputFormat` | Scanning completed successfully |
-| `ScanCancelled`   | ---                                  | User cancelled the scanner      |
+| `ScanCancelled`   | —                                    | User cancelled the scanner      |
 | `ScanFailed`      | `error`                              | An error occurred               |
+
+## Scanned Files
+
+Scanned files are saved to the app's internal storage under the configured `storage_directory` (default: `scanned-documents`). File paths returned in the `DocumentScanned` event are absolute paths on the device.
+
+- **JPEG output:** one file per page (e.g. `scan_0.jpg`, `scan_1.jpg`)
+- **PDF output:** a single multi-page PDF file
+- Files persist until the app is uninstalled or you delete them manually
+
+If you plan to upload scanned files to a server, consider the file sizes: a single page at JPEG quality 90 can be 1–3 MB. Lower `jpegQuality` (e.g. 70) or use PDF output for multi-page documents to reduce size.
+
+## Required Permissions
+
+Declared automatically via `nativephp.json`. No manual configuration needed.
+
+**Android:** `CAMERA` — ML Kit handles the scanner UI internally.
+
+**iOS:** `NSCameraUsageDescription` — VisionKit requests camera access at runtime.
+
+No API keys or internet required. You'll need to reference these permissions when filling out the App Store / Play Store privacy questionnaires.
 
 ## Documentation
 
-- [Installation](docs/installation.md) --- requirements, setup steps, verification
-- [Configuration](docs/configuration.md) --- all config options explained
-- [Usage with Livewire](docs/livewire.md) --- Livewire components and event handling
-- [Usage with JavaScript](docs/javascript.md) --- Inertia Vue/React integration
-- [API Reference](docs/api-reference.md) --- events, DTOs, enums, validation, contracts
+- [Installation](docs/installation.md) — requirements, setup steps, verification
+- [Configuration](docs/configuration.md) — all config options explained
+- [Usage with Livewire](docs/livewire.md) — Livewire components and event handling
+- [Usage with JavaScript](docs/javascript.md) — Inertia Vue/React integration
+- [API Reference](docs/api-reference.md) — events, DTOs, enums, validation, contracts
 
 ## Testing
 
