@@ -10,6 +10,8 @@ use Ikromjon\DocumentScanner\Facades\DocumentScanner;
 
 Opens the native document scanner UI. Returns immediately — results arrive via events.
 
+When called without the native bridge (e.g., `php artisan serve`), logs a warning and returns `[]`.
+
 ```php
 // With defaults
 DocumentScanner::scan();

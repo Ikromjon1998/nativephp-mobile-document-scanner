@@ -70,6 +70,26 @@ php artisan tinker
 >>> app(\Ikromjon\DocumentScanner\Contracts\DocumentScannerInterface::class)
 ```
 
+## Troubleshooting
+
+### `scan()` does nothing / returns empty array
+
+The scanner requires a NativePHP native build on a real device. It won't work with `php artisan serve` or in the browser. When the bridge isn't available, `scan()` logs a warning and returns `[]`.
+
+Check your Laravel log (`storage/logs/laravel.log`) for:
+
+```
+DocumentScanner: nativephp_call() is not available. The document scanner requires a NativePHP native build.
+```
+
+**Fix:** Run `php artisan native:run android` or `php artisan native:run ios`.
+
+### No events received after scanning
+
+- Verify your Livewire component uses `#[OnNative(DocumentScanned::class)]` (not `#[On]`)
+- Verify the event class is imported: `use Ikromjon\DocumentScanner\Events\DocumentScanned`
+- Check that the scan actually completed (listen for `ScanCancelled` and `ScanFailed` too)
+
 ## Next Steps
 
 - [Usage with Livewire](livewire.md) — build a scanner component

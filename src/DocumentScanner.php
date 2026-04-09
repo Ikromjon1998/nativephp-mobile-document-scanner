@@ -89,12 +89,32 @@ class DocumentScanner implements DocumentScannerInterface
     protected function call(string $function, array $data = []): array
     {
         if (! function_exists('nativephp_call')) {
+            if (function_exists('logger')) {
+                logger()->warning(
+                    'DocumentScanner: nativephp_call() is not available. '
+                    .'The document scanner requires a NativePHP native build. '
+                    .'Run: php artisan native:run android|ios',
+                );
+            }
+
             return [];
         }
 
         $data['_config'] = $this->nativeConfig();
 
-        $result = nativephp_call($function, json_encode($data));
+        $payload = json_encode($data);
+
+        if ($payload === false) {
+            if (function_exists('logger')) {
+                logger()->warning(
+                    'DocumentScanner: failed to encode bridge payload: '.json_last_error_msg(),
+                );
+            }
+
+            return [];
+        }
+
+        $result = nativephp_call($function, $payload);
 
         if (! $result) {
             return [];

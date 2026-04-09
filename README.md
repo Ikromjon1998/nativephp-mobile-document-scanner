@@ -6,29 +6,46 @@
 
 Scan documents with automatic edge detection, perspective correction, and cropping in your NativePHP Mobile app — powered by native platform APIs.
 
-## How it works
+## Quick Start
+
+```bash
+composer require ikromjon/nativephp-mobile-document-scanner
+php artisan native:plugin:register ikromjon/nativephp-mobile-document-scanner
+php artisan native:run android  # or ios
+```
+
+```php
+use Ikromjon\DocumentScanner\Facades\DocumentScanner;
+use Ikromjon\DocumentScanner\Events\DocumentScanned;
+use Native\Mobile\Attributes\OnNative;
+
+// In your Livewire component:
+DocumentScanner::scan();
+
+// Handle the result (Livewire method)
+#[OnNative(DocumentScanned::class)]
+public function onScanned($data)
+{
+    $paths = $data['paths'];           // ['/path/scan_0.jpg', ...]
+    $pageCount = $data['pageCount'];   // 2
+}
+```
+
+That's it. The scanner opens, the user scans, and you get the file paths back via events. See below for full options and JavaScript usage.
+
+## How It Works
 
 | Platform    | Native API                                   | Features                                                                |
 | ----------- | -------------------------------------------- | ----------------------------------------------------------------------- |
 | **iOS**     | VisionKit (`VNDocumentCameraViewController`) | Auto edge detection, perspective correction, shadow removal, multi-page |
 | **Android** | Google ML Kit Document Scanner               | Auto edge detection, cropping, rotation, multi-page, gallery import     |
 
-## Features
-
-- Automatic edge detection and perspective correction
-- Multi-page document scanning
-- Output as JPEG images or PDF
-- Configurable JPEG quality (1-100)
-- Configurable page limits
-- Events for scan completion, cancellation, and errors
-- Works with Livewire, Inertia (Vue/React), and native UI
-- No external API keys or internet required
+No external API keys or internet required. Camera permission is handled automatically.
 
 ## Installation
 
 ```bash
 composer require ikromjon/nativephp-mobile-document-scanner
-
 php artisan native:plugin:register ikromjon/nativephp-mobile-document-scanner
 ```
 
@@ -40,6 +57,8 @@ php artisan native:run android
 php artisan native:run ios
 ```
 
+> **Note:** The scanner requires a native build on a real device — it won't work with `php artisan serve`. If you call `scan()` without a native build, you'll see a warning in your Laravel log.
+
 ## Configuration
 
 Optionally publish the config file:
@@ -48,15 +67,15 @@ Optionally publish the config file:
 php artisan vendor:publish --tag=document-scanner-config
 ```
 
-| Key                     | Default             | Description                                |
-| ----------------------- | ------------------- | ------------------------------------------ |
-| `default_max_pages`     | `0`                 | Default max pages per scan (0 = unlimited) |
-| `max_pages_limit`       | `100`               | Absolute cap on pages per scan             |
-| `default_output_format` | `jpeg`              | Default output format (`jpeg` or `pdf`)    |
-| `default_jpeg_quality`  | `90`                | Default JPEG compression quality (1-100)   |
-| `storage_directory`     | `scanned-documents` | Subdirectory for scanned files             |
-| `default_gallery_import`| `false`             | Allow gallery import (Android only)        |
-| `default_scanner_mode`  | `full`              | Scanner mode: `base`, `filter`, `full` (Android only) |
+| Key                     | Default             | Description                                            |
+| ----------------------- | ------------------- | ------------------------------------------------------ |
+| `default_max_pages`     | `0`                 | Default max pages per scan (0 = unlimited)             |
+| `max_pages_limit`       | `100`               | Absolute cap on pages per scan                         |
+| `default_output_format` | `jpeg`              | Default output format (`jpeg` or `pdf`)                |
+| `default_jpeg_quality`  | `90`                | Default JPEG compression quality (1-100)               |
+| `storage_directory`     | `scanned-documents` | Subdirectory for scanned files                         |
+| `default_gallery_import`| `false`             | Allow gallery import (Android only)                    |
+| `default_scanner_mode`  | `full`              | Scanner mode: `base`, `filter`, `full` (Android only)  |
 
 ## Usage (PHP)
 
@@ -92,49 +111,63 @@ use Ikromjon\DocumentScanner\Enums\OutputFormat;
 
 DocumentScanner::scan(new ScanOptions(
     maxPages: 5,
-    outputFormat: OutputFormat::Jpeg,
-    jpegQuality: 90,
+    outputFormat: OutputFormat::Pdf,
 ));
 ```
 
 ### Scan Parameters
 
-| Parameter      | Type                 | Required | Description                               |
-| -------------- | -------------------- | -------- | ----------------------------------------- |
-| `maxPages`     | int                  | No       | Max pages to scan (0 = unlimited)         |
-| `outputFormat` | OutputFormat\|string | No       | `jpeg` or `pdf`                           |
-| `jpegQuality`  | int                  | No       | JPEG quality 1-100 (only for jpeg output) |
-| `galleryImport`| bool                 | No       | Allow gallery import (Android only)       |
-| `scannerMode`  | ScannerMode\|string  | No       | `base`, `filter`, or `full` (Android only)|
+| Parameter       | Type                 | Platform     | Description                               |
+| --------------- | -------------------- | ------------ | ----------------------------------------- |
+| `maxPages`      | int                  | Both         | Max pages to scan (0 = unlimited)         |
+| `outputFormat`  | OutputFormat\|string | Both         | `jpeg` or `pdf`                           |
+| `jpegQuality`   | int                  | Both         | JPEG quality 1-100 (only for jpeg output) |
+| `galleryImport` | bool                 | Android only | Allow importing from device gallery       |
+| `scannerMode`   | ScannerMode\|string  | Android only | `base`, `filter`, or `full`               |
 
-## Listening to Events (Livewire)
+## Full Livewire Example
+
+A complete component that scans documents and displays the results:
 
 ```php
+use Livewire\Component;
 use Native\Mobile\Attributes\OnNative;
+use Ikromjon\DocumentScanner\Facades\DocumentScanner;
 use Ikromjon\DocumentScanner\Events\DocumentScanned;
 use Ikromjon\DocumentScanner\Events\ScanCancelled;
 use Ikromjon\DocumentScanner\Events\ScanFailed;
 
-#[OnNative(DocumentScanned::class)]
-public function onScanned($data)
+class DocumentScannerComponent extends Component
 {
-    // $data['paths'] — array of file paths
-    // $data['pageCount'] — number of pages scanned
-    // $data['outputFormat'] — 'jpeg' or 'pdf'
-}
+    public array $scannedFiles = [];
+    public string $error = '';
 
-#[OnNative(ScanCancelled::class)]
-public function onCancelled()
-{
-    // User cancelled the scanner
-}
+    public function scan()
+    {
+        DocumentScanner::scan(['maxPages' => 5]);
+    }
 
-#[OnNative(ScanFailed::class)]
-public function onFailed($data)
-{
-    // $data['error'] — error message
+    #[OnNative(DocumentScanned::class)]
+    public function onScanned($data)
+    {
+        $this->scannedFiles = $data['paths'];
+    }
+
+    #[OnNative(ScanCancelled::class)]
+    public function onCancelled()
+    {
+        // User dismissed the scanner
+    }
+
+    #[OnNative(ScanFailed::class)]
+    public function onFailed($data)
+    {
+        $this->error = $data['error'];
+    }
 }
 ```
+
+> **Important:** Use `#[OnNative(...)]` (not `#[On(...)]`) for NativePHP events.
 
 ## Listening to Events (Laravel)
 
@@ -186,13 +219,21 @@ On(Events.ScanFailed, (payload) => {
 | `ScanCancelled`   | —                                    | User cancelled the scanner      |
 | `ScanFailed`      | `error`                              | An error occurred               |
 
+## Scanned Files
+
+Scanned files are saved to the app's internal storage under the configured `storage_directory` (default: `scanned-documents`). File paths returned in the `DocumentScanned` event are absolute paths on the device.
+
+- **JPEG output:** one file per page (e.g. `scan_0.jpg`, `scan_1.jpg`)
+- **PDF output:** a single multi-page PDF file
+- Files persist until the app is uninstalled or you delete them manually
+
+If you plan to upload scanned files to a server, consider the file sizes: a single page at JPEG quality 90 can be 1–3 MB. Lower `jpegQuality` (e.g. 70) or use PDF output for multi-page documents to reduce size.
+
 ## Required Permissions
 
-Declared automatically via `nativephp.json`. No manual configuration needed.
+**Android:** `CAMERA` — declared automatically via `nativephp.json`. ML Kit handles the scanner UI internally.
 
-**Android:** `CAMERA` — ML Kit handles the scanner UI internally.
-
-**iOS:** Camera access is requested at runtime by VisionKit automatically.
+**iOS:** VisionKit requests camera access at runtime. Your app's `Info.plist` must include an `NSCameraUsageDescription` string — NativePHP sets a default, but you should customize it for your app store submission (e.g. "This app uses the camera to scan documents").
 
 No API keys or internet required.
 
