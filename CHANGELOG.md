@@ -5,16 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.3.0] - 2026-04-09
 
 ### Added
 
 - Warning log when `scan()` is called outside a NativePHP native build
+- Graceful handling of `json_encode` failure in bridge calls
 - Troubleshooting section in installation docs
 - Quick-start example at the top of README for faster onboarding
 - Full Livewire component example in README
 - Scanned files and required permissions sections in README
 - Platform column in scan parameters table to clarify Android-only options
+
+### Changed
+
+- Replaced fake native code lint with real ktlint (Kotlin) and SwiftLint (Swift)
+- Bumped `actions/checkout` to v5 in CI workflow
+- Raised code coverage threshold from 90% to 95%
+- Fixed Android dependencies format in `nativephp.json`
 
 ## [1.2.0] - 2026-04-05
 
@@ -54,6 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pest test suite with full coverage
 - `declare(strict_types=1)` in all PHP files
 
+[1.3.0]: https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/releases/tag/v1.3.0
 [1.2.0]: https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/releases/tag/v1.2.0
 [1.1.0]: https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/releases/tag/v1.0.0
