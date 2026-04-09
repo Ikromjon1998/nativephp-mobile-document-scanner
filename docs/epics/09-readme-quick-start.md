@@ -15,10 +15,10 @@ Other popular Laravel packages (Spatie, Filament) lead with a 3-5 line usage sni
 
 ## Acceptance Criteria
 
-- [ ] README starts with a concise quick-start block (install + scan in ~5 lines)
-- [ ] Quick-start shows the simplest possible usage (facade + one event listener)
-- [ ] Full documentation sections remain below the quick-start
-- [ ] No duplication — quick-start links to detailed sections for more info
+- [x] README starts with a concise quick-start block (install + scan in ~5 lines)
+- [x] Quick-start shows the simplest possible usage (facade + one event listener)
+- [x] Full documentation sections remain below the quick-start
+- [x] No duplication — quick-start links to detailed sections for more info
 
 ## Implementation Steps
 

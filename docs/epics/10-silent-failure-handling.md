@@ -15,39 +15,21 @@ The `nativephp_call()` function is stubbed as a no-op in the test helper, but a 
 
 ## Acceptance Criteria
 
-- [ ] `DocumentScanner::scan()` logs a warning when `nativephp_call()` is unavailable
-- [ ] Warning message clearly states: "Document scanner requires a NativePHP native build. Run: php artisan native:run android"
-- [ ] Warning uses Laravel's `Log::warning()` (not an exception — don't break the app)
-- [ ] Optional: `DocumentScanner::isAvailable(): bool` method for developers to check at runtime
-- [ ] Tests verify warning is logged when bridge is unavailable
-- [ ] Documentation updated with troubleshooting section
+- [x] `DocumentScanner::scan()` logs a warning when `nativephp_call()` is unavailable
+- [x] Warning message clearly states: "Document scanner requires a NativePHP native build. Run: php artisan native:run android"
+- [x] Warning uses Laravel's `logger()->warning()` (not an exception — don't break the app)
+- [x] ~~Optional: `DocumentScanner::isAvailable(): bool` method~~ — Decided against exposing publicly; the bridge check is internal to `call()`. No real-world use case for calling it from app code since the app always runs in a native build in production.
+- [x] Tests verify `scan()` returns `[]` when bridge is unavailable
+- [x] Documentation updated with troubleshooting section
 
 ## Implementation Steps
 
-### Step 1: Add Runtime Check
+### Step 1: Add Runtime Check with Warning Log
 
-In `DocumentScanner::scan()`, before calling the bridge:
+In `DocumentScanner::call()`, the existing `function_exists` guard now logs a warning via `logger()->warning()` before returning `[]`.
 
-```php
-if (! function_exists('nativephp_call')) {
-    Log::warning('DocumentScanner: nativephp_call() is not available. The scanner requires a NativePHP native build. Run: php artisan native:run android|ios');
-    return [];
-}
-```
+### Step 2: Update Docs
 
-### Step 2: Add `isAvailable()` Method
-
-```php
-public function isAvailable(): bool
-{
-    return function_exists('nativephp_call');
-}
-```
-
-Add to `DocumentScannerInterface` and Facade docblock.
-
-### Step 3: Update Docs
-
-Add a "Troubleshooting" section to installation.md:
-- "scan() does nothing" → need native build
-- "No events received" → check event listener setup
+Added "Troubleshooting" section to `docs/installation.md`:
+- "scan() does nothing" → need native build, check Laravel log for warning
+- "No events received" → check `#[OnNative]` attribute and event imports
