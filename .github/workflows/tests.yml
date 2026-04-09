@@ -17,7 +17,7 @@ jobs:
     name: PHP ${{ matrix.php }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -40,28 +40,29 @@ jobs:
       - name: Run tests
         run: vendor/bin/pest --coverage --min=95
 
-  lint-native:
+  lint-kotlin:
     runs-on: ubuntu-latest
-    name: Native Code Lint
+    name: Kotlin Lint
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Check Kotlin syntax
+      - name: Install ktlint
         run: |
-          for f in resources/android/src/*.kt; do
-            echo "Checking $f..."
-            if ! head -1 "$f" | grep -q "^package"; then
-              echo "Warning: $f may have syntax issues"
-            fi
-          done
-          echo "Kotlin files checked"
+          curl -sSLO https://github.com/pinterest/ktlint/releases/latest/download/ktlint
+          chmod +x ktlint
+          sudo mv ktlint /usr/local/bin/
 
-      - name: Check Swift syntax
-        run: |
-          for f in resources/ios/Sources/*.swift; do
-            echo "Checking $f..."
-            if ! head -1 "$f" | grep -qE "^(import|//|enum|class|struct|protocol)"; then
-              echo "Warning: $f may have syntax issues"
-            fi
-          done
-          echo "Swift files checked"
+      - name: Lint Kotlin files
+        run: ktlint "resources/android/src/**/*.kt"
+
+  lint-swift:
+    runs-on: macos-latest
+    name: Swift Lint
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Lint Swift files
+        run: swiftlint lint --strict --config resources/ios/.swiftlint.yml resources/ios/Sources/
