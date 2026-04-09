@@ -93,7 +93,7 @@ class DocumentScanner implements DocumentScannerInterface
                 logger()->warning(
                     'DocumentScanner: nativephp_call() is not available. '
                     .'The document scanner requires a NativePHP native build. '
-                    .'Run: php artisan native:run android|ios'
+                    .'Run: php artisan native:run android|ios',
                 );
             }
 
