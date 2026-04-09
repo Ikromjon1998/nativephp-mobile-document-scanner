@@ -1,6 +1,7 @@
 # NativePHP Mobile Document Scanner
 
 [![Tests](https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/actions/workflows/tests.yml)
+[![Total Downloads](https://img.shields.io/packagist/dt/ikromjon/nativephp-mobile-document-scanner)](https://packagist.org/packages/ikromjon/nativephp-mobile-document-scanner)
 [![License: MIT](https://img.shields.io/github/license/Ikromjon1998/nativephp-mobile-document-scanner)](LICENSE)
 [![PHP Version](https://img.shields.io/badge/php-8.3%2B-8892BF)](composer.json)
 
