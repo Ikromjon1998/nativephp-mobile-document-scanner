@@ -102,7 +102,19 @@ class DocumentScanner implements DocumentScannerInterface
 
         $data['_config'] = $this->nativeConfig();
 
-        $result = nativephp_call($function, (string) json_encode($data));
+        $payload = json_encode($data);
+
+        if ($payload === false) {
+            if (function_exists('logger')) {
+                logger()->warning(
+                    'DocumentScanner: failed to encode bridge payload: '.json_last_error_msg(),
+                );
+            }
+
+            return [];
+        }
+
+        $result = nativephp_call($function, $payload);
 
         if (! $result) {
             return [];

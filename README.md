@@ -231,13 +231,11 @@ If you plan to upload scanned files to a server, consider the file sizes: a sing
 
 ## Required Permissions
 
-Declared automatically via `nativephp.json`. No manual configuration needed.
+**Android:** `CAMERA` — declared automatically via `nativephp.json`. ML Kit handles the scanner UI internally.
 
-**Android:** `CAMERA` — ML Kit handles the scanner UI internally.
+**iOS:** VisionKit requests camera access at runtime. Your app's `Info.plist` must include an `NSCameraUsageDescription` string — NativePHP sets a default, but you should customize it for your app store submission (e.g. "This app uses the camera to scan documents").
 
-**iOS:** `NSCameraUsageDescription` — VisionKit requests camera access at runtime.
-
-No API keys or internet required. You'll need to reference these permissions when filling out the App Store / Play Store privacy questionnaires.
+No API keys or internet required.
 
 ## Documentation
 

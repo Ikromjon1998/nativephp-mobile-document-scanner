@@ -7,6 +7,10 @@ declare(strict_types=1);
  * because once nativephp_call() is defined it persists for the whole
  * PHP process. Pest loads files alphabetically, so "Bridge..." sorts
  * before "Config..." — do not rename this file past the letter "B".
+ *
+ * The first test asserts function_exists('nativephp_call') === false
+ * as a guard: if file ordering ever changes, that assertion fails
+ * immediately rather than silently testing the wrong code path.
  */
 
 use Ikromjon\DocumentScanner\DocumentScanner;
