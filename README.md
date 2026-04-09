@@ -238,6 +238,10 @@ If you plan to upload scanned files to a server, consider the file sizes: a sing
 
 No API keys or internet required.
 
+## Demo App
+
+See [Smart Docs](https://github.com/Ikromjon1998/smart-docs) — a full NativePHP mobile app that uses this plugin for document scanning.
+
 ## Documentation
 
 - [Installation](docs/installation.md) — requirements, setup steps, verification
