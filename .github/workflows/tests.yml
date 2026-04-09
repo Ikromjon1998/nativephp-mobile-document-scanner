@@ -38,7 +38,7 @@ jobs:
         run: vendor/bin/phpstan analyse
 
       - name: Run tests
-        run: vendor/bin/pest --coverage --min=90
+        run: vendor/bin/pest --coverage --min=95
 
   lint-native:
     runs-on: ubuntu-latest

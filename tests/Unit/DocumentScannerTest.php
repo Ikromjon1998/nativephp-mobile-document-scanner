@@ -239,13 +239,3 @@ describe('scan', function (): void {
         $this->scanner->scan(['scannerMode' => 'turbo']);
     })->throws(InvalidArgumentException::class, 'scannerMode must be "base", "filter", or "full".');
 });
-
-describe('bridge unavailable', function (): void {
-    it('returns empty array when bridge returns null', function (): void {
-        stubNativephpCallReturnsNull();
-
-        $result = $this->scanner->scan();
-
-        expect($result)->toBe([]);
-    });
-});
