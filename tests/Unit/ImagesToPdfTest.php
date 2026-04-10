@@ -112,4 +112,46 @@ describe('imagesToPdf', function (): void {
         expect($capturedData)->toHaveKey('_config');
         expect($capturedData['_config'])->toHaveKey('storage_directory');
     });
+
+    it('returns empty array when bridge returns invalid json', function (): void {
+        stubNativephpCall(fn (): string => 'not-json');
+
+        $result = $this->scanner->imagesToPdf(['/path/scan_0.jpg']);
+
+        expect($result)->toBe([]);
+    });
+
+    it('returns empty array when payload cannot be json encoded', function (): void {
+        stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+
+        $scanner = new class extends DocumentScanner
+        {
+            protected function nativeConfig(): array
+            {
+                return ['bad' => "\xB1\x31"];
+            }
+        };
+
+        $result = $scanner->imagesToPdf(['/path/scan_0.jpg']);
+
+        expect($result)->toBe([]);
+    });
+
+    it('throws when a path is null', function (): void {
+        stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+
+        $this->scanner->imagesToPdf([null]);
+    })->throws(InvalidArgumentException::class, 'Each path must be a string.');
+
+    it('throws when a path is an array', function (): void {
+        stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+
+        $this->scanner->imagesToPdf([['nested']]);
+    })->throws(InvalidArgumentException::class, 'Each path must be a string.');
+
+    it('throws when a path is a boolean', function (): void {
+        stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+
+        $this->scanner->imagesToPdf([true]);
+    })->throws(InvalidArgumentException::class, 'Each path must be a string.');
 });
