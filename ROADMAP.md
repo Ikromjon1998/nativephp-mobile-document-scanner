@@ -14,14 +14,16 @@ Feature roadmap for the NativePHP Mobile Document Scanner plugin.
 | 12 | JS Import Ergonomics | Medium | Not Started | [docs/epics/12-js-import-ergonomics.md](docs/epics/12-js-import-ergonomics.md) |
 | 13 | maxPages Null Convention | Low | Not Started | [docs/epics/13-max-pages-null-convention.md](docs/epics/13-max-pages-null-convention.md) |
 
-### Features (Deferred)
+### Features (Planned)
 
 | # | Epic | Priority | Status | Doc |
 |---|------|----------|--------|-----|
-| 3 | iOS Max Pages Enforcement | Low | Not Started | [docs/epics/03-ios-max-pages.md](docs/epics/03-ios-max-pages.md) |
-| 4 | Scanned File Management | Low | Not Started | [docs/epics/04-file-management.md](docs/epics/04-file-management.md) |
+| 14 | JPEG-to-PDF Conversion | High | Not Started | [docs/epics/14-jpeg-to-pdf-conversion.md](docs/epics/14-jpeg-to-pdf-conversion.md) |
+| 15 | Page Thumbnail Extraction from PDF | Medium | Not Started | [docs/epics/15-page-thumbnail-extraction.md](docs/epics/15-page-thumbnail-extraction.md) |
+| 4 | Scanned File Management | Medium | Not Started | [docs/epics/04-file-management.md](docs/epics/04-file-management.md) |
 | 5 | Scan Result DTO | Low | Not Started | [docs/epics/05-scan-result-dto.md](docs/epics/05-scan-result-dto.md) |
 | 6 | Image Post-Processing | Low | Not Started | [docs/epics/06-image-post-processing.md](docs/epics/06-image-post-processing.md) |
+| 3 | iOS Max Pages Enforcement | Low | Not Started | [docs/epics/03-ios-max-pages.md](docs/epics/03-ios-max-pages.md) |
 | 7 | Real Device Test App | Low | Not Started | [docs/epics/07-test-app.md](docs/epics/07-test-app.md) |
 
 ### Completed
@@ -34,6 +36,7 @@ Feature roadmap for the NativePHP Mobile Document Scanner plugin.
 
 ## Release History
 
+- v1.3.0: Warning log, quick-start README, real native linting, coverage 95% (Epics 9 & 10)
 - v1.2.0: Scanner mode selection (Epic 2)
 - v1.1.0: Gallery import (Epic 1)
 - v1.0.0: Core scanning (JPEG/PDF), events, config, validation, tests, CI/CD, docs

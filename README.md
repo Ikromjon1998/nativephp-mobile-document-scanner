@@ -256,6 +256,15 @@ See [Smart Docs](https://github.com/Ikromjon1998/smart-docs) — a full NativePH
 - [Usage with JavaScript](docs/javascript.md) — Inertia Vue/React integration
 - [API Reference](docs/api-reference.md) — events, DTOs, enums, validation, contracts
 
+## Planned Features
+
+- **JPEG-to-PDF conversion** — combine scanned pages into a single PDF on-device, no extra library needed (`DocumentScanner::imagesToPdf($paths)`)
+- **PDF page thumbnails** — extract page previews from a scanned PDF (`DocumentScanner::pdfToImages($pdfPath)`)
+- **File management** — list, delete, and clean up scanned files via the plugin API
+- **Image post-processing** — grayscale, contrast, rotation on scanned images
+
+See [ROADMAP.md](ROADMAP.md) for full details and status.
+
 ## Testing
 
 ```bash
