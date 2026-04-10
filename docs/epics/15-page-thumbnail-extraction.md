@@ -1,7 +1,7 @@
 # Epic 15: Page Thumbnail Extraction from PDF
 
 **Priority:** Medium
-**Status:** Not Started
+**Status:** Done
 
 ## Goal
 
@@ -15,13 +15,13 @@ A `pdfToImages()` method would let developers extract thumbnails from any PDF, c
 
 ## Acceptance Criteria
 
-- [ ] `DocumentScanner::pdfToImages(string $pdfPath, ?int $quality = 80): array`
-- [ ] Returns array of JPEG file paths (one per page)
-- [ ] Uses native APIs (Android: `PdfRenderer`, iOS: `PDFDocument`/`CGPDFPage`)
-- [ ] Configurable output quality
-- [ ] Bridge function registered in `nativephp.json`
-- [ ] JS wrapper: `pdfToImages(pdfPath, quality?)`
-- [ ] Tests and documentation
+- [x] `DocumentScanner::pdfToImages(string $pdfPath, ?int $quality = 80): array`
+- [x] Returns `['paths' => ['/path/page_0.jpg', ...]]`
+- [x] Uses native APIs (Android: `PdfRenderer`, iOS: `PDFDocument`/`CGPDFPage`)
+- [x] Configurable output quality
+- [x] Bridge function registered in `nativephp.json`
+- [x] JS wrapper: `pdfToImages(pdfPath, quality?)`
+- [x] Tests and documentation
 
 ## Implementation Steps
 

@@ -28,6 +28,61 @@ class DocumentScanner implements DocumentScannerInterface
     }
 
     /**
+     * Combine image files into a single PDF.
+     *
+     * @param  array<int, mixed>  $paths
+     * @return array<string, mixed>
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function imagesToPdf(array $paths, ?string $outputPath = null): array
+    {
+        if ($paths === []) {
+            throw new \InvalidArgumentException('paths must be a non-empty array.');
+        }
+
+        foreach ($paths as $path) {
+            if (! is_string($path)) {
+                throw new \InvalidArgumentException('Each path must be a string.');
+            }
+        }
+
+        $data = ['paths' => array_values($paths)];
+
+        if ($outputPath !== null) {
+            $data['outputPath'] = $outputPath;
+        }
+
+        return $this->call('DocumentScanner.ImagesToPdf', $data);
+    }
+
+    /**
+     * Extract page thumbnails from a PDF as JPEG images.
+     *
+     * @return array<string, mixed>
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function pdfToImages(string $pdfPath, ?int $quality = 80): array
+    {
+        if ($pdfPath === '') {
+            throw new \InvalidArgumentException('pdfPath must be a non-empty string.');
+        }
+
+        if ($quality !== null && ($quality < 1 || $quality > 100)) {
+            throw new \InvalidArgumentException('quality must be between 1 and 100.');
+        }
+
+        $data = ['pdfPath' => $pdfPath];
+
+        if ($quality !== null) {
+            $data['quality'] = $quality;
+        }
+
+        return $this->call('DocumentScanner.PdfToImages', $data);
+    }
+
+    /**
      * Normalize a raw options array, converting enum values to strings and validating.
      *
      * @param  array<string, mixed>  $options

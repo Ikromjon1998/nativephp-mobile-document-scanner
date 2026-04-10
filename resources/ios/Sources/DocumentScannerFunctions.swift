@@ -1,6 +1,7 @@
 import Foundation
-import VisionKit
+import PDFKit
 import UIKit
+import VisionKit
 
 // MARK: - Scanner Delegate
 
@@ -153,6 +154,123 @@ enum DocumentScannerFunctions {
             }
 
             return ["success": true]
+        }
+    }
+
+    class ImagesToPdf: BridgeFunction {
+        func execute(parameters: [String: Any]) throws -> [String: Any] {
+            let config = parameters["_config"] as? [String: Any] ?? [:]
+            let paths = parameters["paths"] as? [String] ?? []
+            let outputPath = parameters["outputPath"] as? String
+            let storageDir = config["storage_directory"] as? String ?? "scanned-documents"
+
+            guard !paths.isEmpty else {
+                return ["error": "No image paths provided"]
+            }
+
+            let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let dir = docs.appendingPathComponent(storageDir, isDirectory: true)
+            if !FileManager.default.fileExists(atPath: dir.path) {
+                try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            }
+
+            let timestamp = Int(Date().timeIntervalSince1970 * 1000)
+            let destURL: URL
+            if let outputPath = outputPath {
+                destURL = URL(fileURLWithPath: outputPath)
+            } else {
+                destURL = dir.appendingPathComponent("combined_\(timestamp).pdf")
+            }
+
+            // Collect valid images
+            var images: [UIImage] = []
+            for path in paths {
+                if let image = UIImage(contentsOfFile: path) {
+                    images.append(image)
+                }
+            }
+
+            guard !images.isEmpty else {
+                return ["error": "No valid images found"]
+            }
+
+            // Create PDF with per-image page sizes
+            let renderer = UIGraphicsPDFRenderer(bounds: .zero)
+            let data = renderer.pdfData { context in
+                for image in images {
+                    let pageSize = CGSize(width: image.size.width, height: image.size.height)
+                    let pageRect = CGRect(origin: .zero, size: pageSize)
+                    context.beginPage(withBounds: pageRect, pageInfo: [:])
+                    image.draw(in: pageRect)
+                }
+            }
+
+            try? data.write(to: destURL)
+
+            if let send = LaravelBridge.shared.send {
+                send(
+                    "Ikromjon\\DocumentScanner\\Events\\PdfCreated",
+                    ["path": destURL.path]
+                )
+            }
+
+            return ["path": destURL.path]
+        }
+    }
+
+    class PdfToImages: BridgeFunction {
+        func execute(parameters: [String: Any]) throws -> [String: Any] {
+            let config = parameters["_config"] as? [String: Any] ?? [:]
+            let pdfPath = parameters["pdfPath"] as? String ?? ""
+            let quality = parameters["quality"] as? Int ?? 80
+            let storageDir = config["storage_directory"] as? String ?? "scanned-documents"
+
+            guard !pdfPath.isEmpty else {
+                return ["error": "No PDF path provided"]
+            }
+
+            let pdfURL = URL(fileURLWithPath: pdfPath)
+            guard let pdfDocument = PDFDocument(url: pdfURL) else {
+                return ["error": "Failed to open PDF"]
+            }
+
+            let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let dir = docs.appendingPathComponent(storageDir, isDirectory: true)
+            if !FileManager.default.fileExists(atPath: dir.path) {
+                try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            }
+
+            let timestamp = Int(Date().timeIntervalSince1970 * 1000)
+            let jpegQuality = CGFloat(max(1, min(100, quality))) / 100.0
+            var paths: [String] = []
+
+            for i in 0..<pdfDocument.pageCount {
+                guard let page = pdfDocument.page(at: i) else { continue }
+
+                let pageRect = page.bounds(for: .mediaBox)
+                let scale: CGFloat = 2.0
+                let size = CGSize(
+                    width: pageRect.width * scale,
+                    height: pageRect.height * scale
+                )
+
+                let renderer = UIGraphicsImageRenderer(size: size)
+                let image = renderer.image { context in
+                    UIColor.white.setFill()
+                    context.fill(CGRect(origin: .zero, size: size))
+                    context.cgContext.translateBy(x: 0, y: size.height)
+                    context.cgContext.scaleBy(x: scale, y: -scale)
+                    page.draw(with: .mediaBox, to: context.cgContext)
+                }
+
+                let filePath = dir.appendingPathComponent("page_\(timestamp)_\(i).jpg")
+                if let jpegData = image.jpegData(compressionQuality: jpegQuality) {
+                    try? jpegData.write(to: filePath)
+                    paths.append(filePath.path)
+                }
+            }
+
+            return ["paths": paths]
         }
     }
 }

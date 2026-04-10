@@ -191,6 +191,8 @@ class HandleDocumentScanned
 ```js
 import {
   scan,
+  imagesToPdf,
+  pdfToImages,
   Events,
 } from "../../vendor/ikromjon/nativephp-mobile-document-scanner/resources/js/index.js";
 import { On } from "#nativephp";
@@ -210,6 +212,14 @@ On(Events.ScanCancelled, () => {
 On(Events.ScanFailed, (payload) => {
   console.error("Failed:", payload.error);
 });
+
+// Combine images into PDF
+const result = await imagesToPdf(["/path/scan_0.jpg", "/path/scan_1.jpg"]);
+console.log("PDF:", result.path);
+
+// Extract thumbnails from PDF
+const thumbs = await pdfToImages("/path/scan.pdf", 80);
+console.log("Pages:", thumbs.paths);
 ```
 
 ## Events
@@ -219,6 +229,7 @@ On(Events.ScanFailed, (payload) => {
 | `DocumentScanned` | `paths`, `pageCount`, `outputFormat` | Scanning completed successfully |
 | `ScanCancelled`   | —                                    | User cancelled the scanner      |
 | `ScanFailed`      | `error`                              | An error occurred               |
+| `PdfCreated`      | `path`                               | `imagesToPdf()` completed       |
 
 ## Scanned Files
 
@@ -256,10 +267,42 @@ See [Smart Docs](https://github.com/Ikromjon1998/smart-docs) — a full NativePH
 - [Usage with JavaScript](docs/javascript.md) — Inertia Vue/React integration
 - [API Reference](docs/api-reference.md) — events, DTOs, enums, validation, contracts
 
+## JPEG-to-PDF Conversion
+
+Combine scanned JPEG pages into a single PDF on-device — no extra PHP library needed:
+
+```php
+use Ikromjon\DocumentScanner\Facades\DocumentScanner;
+use Ikromjon\DocumentScanner\Events\PdfCreated;
+
+// Combine images into a PDF
+$result = DocumentScanner::imagesToPdf([
+    '/path/scan_0.jpg',
+    '/path/scan_1.jpg',
+]);
+$pdfPath = $result['path']; // '/path/combined_1712345678.pdf'
+
+// Listen for completion
+#[OnNative(PdfCreated::class)]
+public function onPdfCreated($data)
+{
+    $pdfPath = $data['path'];
+}
+```
+
+Works with any JPEG files, not just scanned documents.
+
+## PDF Page Thumbnails
+
+Extract page previews from a PDF — useful when you scan as PDF but need page-level previews:
+
+```php
+$result = DocumentScanner::pdfToImages('/path/scan.pdf', quality: 80);
+$pagePaths = $result['paths']; // ['/path/page_0.jpg', '/path/page_1.jpg']
+```
+
 ## Planned Features
 
-- **JPEG-to-PDF conversion** — combine scanned pages into a single PDF on-device, no extra library needed (`DocumentScanner::imagesToPdf($paths)`)
-- **PDF page thumbnails** — extract page previews from a scanned PDF (`DocumentScanner::pdfToImages($pdfPath)`)
 - **File management** — list, delete, and clean up scanned files via the plugin API
 - **Image post-processing** — grayscale, contrast, rotation on scanned images
 

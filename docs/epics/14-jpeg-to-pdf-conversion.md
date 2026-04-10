@@ -1,7 +1,7 @@
 # Epic 14: JPEG-to-PDF Conversion
 
 **Priority:** High
-**Status:** Not Started
+**Status:** Done
 
 ## Goal
 
@@ -15,15 +15,15 @@ Currently, developers must bring their own PDF library (e.g. `setasign/fpdf`) to
 
 ## Acceptance Criteria
 
-- [ ] `DocumentScanner::imagesToPdf(array $paths, ?string $outputPath = null): string`
-- [ ] Returns the absolute path to the generated PDF
-- [ ] Uses native APIs (Android: `PdfDocument`, iOS: `UIGraphicsPDFRenderer`)
-- [ ] Handles portrait and landscape images correctly
-- [ ] `PdfCreated` event dispatched with the output path
-- [ ] Bridge function registered in `nativephp.json`
-- [ ] Works independently of scanning (can convert any JPEG files)
-- [ ] JS wrapper: `imagesToPdf(paths, outputPath?)`
-- [ ] Tests and documentation
+- [x] `DocumentScanner::imagesToPdf(array $paths, ?string $outputPath = null): array`
+- [x] Returns `['path' => '/abs/path/to/output.pdf']`
+- [x] Uses native APIs (Android: `PdfDocument`, iOS: `UIGraphicsPDFRenderer`)
+- [x] Handles portrait and landscape images correctly
+- [x] `PdfCreated` event dispatched with the output path
+- [x] Bridge function registered in `nativephp.json`
+- [x] Works independently of scanning (can convert any JPEG files)
+- [x] JS wrapper: `imagesToPdf(paths, outputPath?)`
+- [x] Tests and documentation
 
 ## Implementation Steps
 

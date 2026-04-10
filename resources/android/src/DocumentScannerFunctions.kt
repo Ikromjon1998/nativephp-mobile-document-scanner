@@ -2,6 +2,11 @@ package com.nativephp.documentscanner
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.pdf.PdfDocument
+import android.graphics.pdf.PdfRenderer
+import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -212,6 +217,123 @@ object DocumentScannerFunctions {
                 }
 
             return mapOf("success" to true)
+        }
+    }
+
+    class ImagesToPdf(
+        private val activity: FragmentActivity,
+    ) : BridgeFunction {
+        override fun execute(parameters: Map<String, Any>): Map<String, Any> {
+            @Suppress("UNCHECKED_CAST")
+            (parameters["_config"] as? Map<String, Any>)?.let { applyConfig(it) }
+
+            @Suppress("UNCHECKED_CAST")
+            val paths = parameters["paths"] as? List<String> ?: emptyList()
+            val outputPath = parameters["outputPath"] as? String
+
+            if (paths.isEmpty()) {
+                return mapOf("error" to "No image paths provided")
+            }
+
+            val dir = getStorageDir(activity)
+            val timestamp = System.currentTimeMillis()
+            val destFile = if (outputPath != null) {
+                File(outputPath)
+            } else {
+                File(dir, "combined_$timestamp.pdf")
+            }
+
+            destFile.parentFile?.let { parent ->
+                if (!parent.exists()) parent.mkdirs()
+            }
+
+            val pdfDocument = PdfDocument()
+
+            try {
+                paths.forEachIndexed { index, imagePath ->
+                    val file = File(imagePath)
+                    if (!file.exists()) return@forEachIndexed
+
+                    val bitmap = BitmapFactory.decodeFile(imagePath) ?: return@forEachIndexed
+
+                    val pageWidth = bitmap.width
+                    val pageHeight = bitmap.height
+                    val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, index).create()
+                    val page = pdfDocument.startPage(pageInfo)
+
+                    page.canvas.drawBitmap(bitmap, 0f, 0f, null)
+                    pdfDocument.finishPage(page)
+                    bitmap.recycle()
+                }
+
+                FileOutputStream(destFile).use { output ->
+                    pdfDocument.writeTo(output)
+                }
+            } finally {
+                pdfDocument.close()
+            }
+
+            val payload = JSONObject().put("path", destFile.absolutePath)
+            dispatchEvent(
+                activity,
+                "Ikromjon\\DocumentScanner\\Events\\PdfCreated",
+                payload,
+            )
+
+            return mapOf("path" to destFile.absolutePath)
+        }
+    }
+
+    class PdfToImages(
+        private val activity: FragmentActivity,
+    ) : BridgeFunction {
+        override fun execute(parameters: Map<String, Any>): Map<String, Any> {
+            @Suppress("UNCHECKED_CAST")
+            (parameters["_config"] as? Map<String, Any>)?.let { applyConfig(it) }
+
+            val pdfPath = parameters["pdfPath"] as? String ?: ""
+            val quality = (parameters["quality"] as? Number)?.toInt() ?: 80
+
+            if (pdfPath.isEmpty()) {
+                return mapOf("error" to "No PDF path provided")
+            }
+
+            val pdfFile = File(pdfPath)
+            if (!pdfFile.exists()) {
+                return mapOf("error" to "PDF file not found")
+            }
+
+            val dir = getStorageDir(activity)
+            val timestamp = System.currentTimeMillis()
+            val paths = mutableListOf<String>()
+
+            val descriptor = ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
+            val renderer = PdfRenderer(descriptor)
+
+            try {
+                for (i in 0 until renderer.pageCount) {
+                    val page = renderer.openPage(i)
+                    val bitmap = Bitmap.createBitmap(
+                        page.width * 2,
+                        page.height * 2,
+                        Bitmap.Config.ARGB_8888,
+                    )
+                    page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                    page.close()
+
+                    val destFile = File(dir, "page_${timestamp}_$i.jpg")
+                    FileOutputStream(destFile).use { output ->
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, output)
+                    }
+                    bitmap.recycle()
+                    paths.add(destFile.absolutePath)
+                }
+            } finally {
+                renderer.close()
+                descriptor.close()
+            }
+
+            return mapOf("paths" to paths)
         }
     }
 }

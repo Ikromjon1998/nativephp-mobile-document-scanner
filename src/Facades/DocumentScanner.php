@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static array<string, mixed> scan(ScanOptions|array<string, mixed> $options = [])
+ * @method static array<string, mixed> imagesToPdf(array<int, string> $paths, ?string $outputPath = null)
+ * @method static array<string, mixed> pdfToImages(string $pdfPath, ?int $quality = 80)
  *
  * @see \Ikromjon\DocumentScanner\DocumentScanner
  */
