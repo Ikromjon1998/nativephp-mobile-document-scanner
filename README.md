@@ -228,7 +228,13 @@ Scanned files are saved to the app's internal storage under the configured `stor
 - **PDF output:** a single multi-page PDF file
 - Files persist until the app is uninstalled or you delete them manually
 
-If you plan to upload scanned files to a server, consider the file sizes: a single page at JPEG quality 90 can be 1–3 MB. Lower `jpegQuality` (e.g. 70) or use PDF output for multi-page documents to reduce size.
+### Which format to use?
+
+**JPEG (default)** is the better choice for most apps. You get individual files per page, which means you can show page previews, let users view/delete specific pages, and convert to PDF later on your own terms (e.g. with [fpdf](https://packagist.org/packages/setasign/fpdf)). You also control file size via `jpegQuality`.
+
+**PDF** is useful when you need a single file immediately and don't need to display or manipulate individual pages. Note that the native scanner produces the PDF directly — you can't extract page previews from it without a separate library.
+
+See [Smart Docs](https://github.com/Ikromjon1998/smart-docs) for an example that scans as JPEG by default and converts to PDF on demand.
 
 ## Required Permissions
 
