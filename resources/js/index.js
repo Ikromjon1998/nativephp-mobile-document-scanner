@@ -53,8 +53,7 @@ export async function scan(options = {}) {
 /**
  * Combine image files into a single PDF.
  *
- * Results are delivered asynchronously via events:
- * - PdfCreated: PDF was created successfully (path)
+ * Returns the output path directly and also dispatches a PdfCreated event.
  *
  * @param {string[]} paths - Array of image file paths to combine
  * @param {string} [outputPath] - Optional output path for the PDF

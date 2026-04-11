@@ -274,6 +274,7 @@ Combine scanned JPEG pages into a single PDF on-device — no extra PHP library 
 ```php
 use Ikromjon\DocumentScanner\Facades\DocumentScanner;
 use Ikromjon\DocumentScanner\Events\PdfCreated;
+use Native\Mobile\Attributes\OnNative;
 
 // Combine images into a PDF
 $result = DocumentScanner::imagesToPdf([
