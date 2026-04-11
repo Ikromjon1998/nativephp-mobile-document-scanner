@@ -1,7 +1,7 @@
 # Epic 11: Platform-Specific Option Hints
 
 **Priority:** Medium
-**Status:** Not Started
+**Status:** Done
 
 ## Goal
 
@@ -18,10 +18,10 @@ A developer building for iOS might set `scannerMode: 'base'` expecting faster sc
 
 ## Acceptance Criteria
 
-- [ ] PHPDoc on `galleryImport` and `scannerMode` properties includes `@note Android only`
-- [ ] `ScanOptions::toArray()` adds a `_platformNotes` key (or similar) when Android-only options are set (optional, for debug)
-- [ ] README and API reference clearly tag Android-only options with a badge or prefix
-- [ ] JS `scan()` JSDoc already notes Android-only (verified) — ensure docs match
+- [x] PHPDoc on `galleryImport` and `scannerMode` properties includes `@note Android only`
+- [x] `ScanOptions::toArray()` adds a `_platformNotes` key when Android-only options are set (for debug)
+- [x] README and API reference clearly tag Android-only options with a badge or prefix
+- [x] JS `scan()` JSDoc already notes Android-only (verified) — docs match
 
 ## Implementation Steps
 

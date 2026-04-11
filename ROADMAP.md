@@ -10,7 +10,7 @@ Feature roadmap for the NativePHP Mobile Document Scanner plugin.
 |---|------|----------|--------|-----|
 | 9 | README Quick-Start | High | **Done** | [docs/epics/09-readme-quick-start.md](docs/epics/09-readme-quick-start.md) |
 | 10 | Silent Failure Handling | High | **Done** | [docs/epics/10-silent-failure-handling.md](docs/epics/10-silent-failure-handling.md) |
-| 11 | Platform-Specific Option Hints | Medium | Not Started | [docs/epics/11-platform-option-hints.md](docs/epics/11-platform-option-hints.md) |
+| 11 | Platform-Specific Option Hints | Medium | **Done** | [docs/epics/11-platform-option-hints.md](docs/epics/11-platform-option-hints.md) |
 | 12 | JS Import Ergonomics | Medium | Not Started | [docs/epics/12-js-import-ergonomics.md](docs/epics/12-js-import-ergonomics.md) |
 | 13 | maxPages Null Convention | Low | Not Started | [docs/epics/13-max-pages-null-convention.md](docs/epics/13-max-pages-null-convention.md) |
 

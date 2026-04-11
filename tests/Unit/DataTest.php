@@ -129,6 +129,48 @@ describe('ScanOptions', function (): void {
         $options->toArray();
     })->throws(InvalidArgumentException::class, 'scannerMode must be "base", "filter", or "full".');
 
+    it('adds _platformNotes when galleryImport is set', function (): void {
+        $options = new ScanOptions(galleryImport: true);
+        $array = $options->toArray();
+
+        expect($array['_platformNotes'])->toBe([
+            'galleryImport is Android only — ignored on iOS',
+        ]);
+    });
+
+    it('adds _platformNotes when scannerMode is non-default', function (): void {
+        $options = new ScanOptions(scannerMode: ScannerMode::Base);
+        $array = $options->toArray();
+
+        expect($array['_platformNotes'])->toBe([
+            'scannerMode is Android only — ignored on iOS',
+        ]);
+    });
+
+    it('adds _platformNotes with both hints when both Android-only options are set', function (): void {
+        $options = new ScanOptions(galleryImport: true, scannerMode: 'filter');
+        $array = $options->toArray();
+
+        expect($array['_platformNotes'])->toBe([
+            'galleryImport is Android only — ignored on iOS',
+            'scannerMode is Android only — ignored on iOS',
+        ]);
+    });
+
+    it('omits _platformNotes when no Android-only options are set', function (): void {
+        $options = new ScanOptions;
+        $array = $options->toArray();
+
+        expect($array)->not->toHaveKey('_platformNotes');
+    });
+
+    it('omits _platformNotes when scannerMode is default full', function (): void {
+        $options = new ScanOptions(scannerMode: ScannerMode::Full);
+        $array = $options->toArray();
+
+        expect($array)->not->toHaveKey('_platformNotes');
+    });
+
     it('can be passed to scan method', function (): void {
         stubNativephpCall(fn () => json_encode(['success' => true]));
 
