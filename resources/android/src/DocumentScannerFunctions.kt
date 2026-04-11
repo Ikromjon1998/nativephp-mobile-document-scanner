@@ -249,27 +249,37 @@ object DocumentScannerFunctions {
             }
 
             val pdfDocument = PdfDocument()
+            var pageNumber = 0
 
             try {
-                paths.forEachIndexed { index, imagePath ->
+                paths.forEach { imagePath ->
                     val file = File(imagePath)
-                    if (!file.exists()) return@forEachIndexed
+                    if (!file.exists()) return@forEach
 
-                    val bitmap = BitmapFactory.decodeFile(imagePath) ?: return@forEachIndexed
+                    val bitmap = BitmapFactory.decodeFile(imagePath) ?: return@forEach
 
                     val pageWidth = bitmap.width
                     val pageHeight = bitmap.height
-                    val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, index).create()
+                    val pageInfo =
+                        PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNumber).create()
                     val page = pdfDocument.startPage(pageInfo)
 
                     page.canvas.drawBitmap(bitmap, 0f, 0f, null)
                     pdfDocument.finishPage(page)
                     bitmap.recycle()
+                    pageNumber++
+                }
+
+                if (pageNumber == 0) {
+                    return mapOf("error" to "No valid images found")
                 }
 
                 FileOutputStream(destFile).use { output ->
                     pdfDocument.writeTo(output)
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to create PDF", e)
+                return mapOf("error" to (e.message ?: "Failed to create PDF"))
             } finally {
                 pdfDocument.close()
             }
@@ -307,11 +317,16 @@ object DocumentScannerFunctions {
             val dir = getStorageDir(activity)
             val timestamp = System.currentTimeMillis()
             val paths = mutableListOf<String>()
+            val clampedQuality = quality.coerceIn(1, 100)
 
-            val descriptor = ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
-            val renderer = PdfRenderer(descriptor)
+            var descriptor: ParcelFileDescriptor? = null
+            var renderer: PdfRenderer? = null
 
             try {
+                descriptor =
+                    ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
+                renderer = PdfRenderer(descriptor)
+
                 for (i in 0 until renderer.pageCount) {
                     val page = renderer.openPage(i)
                     val bitmap =
@@ -325,14 +340,20 @@ object DocumentScannerFunctions {
 
                     val destFile = File(dir, "page_${timestamp}_$i.jpg")
                     FileOutputStream(destFile).use { output ->
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, output)
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, clampedQuality, output)
                     }
                     bitmap.recycle()
                     paths.add(destFile.absolutePath)
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to convert PDF to images", e)
+                return mapOf("error" to (e.message ?: "Failed to convert PDF to images"))
             } finally {
-                renderer.close()
-                descriptor.close()
+                try {
+                    renderer?.close()
+                } finally {
+                    descriptor?.close()
+                }
             }
 
             return mapOf("paths" to paths)

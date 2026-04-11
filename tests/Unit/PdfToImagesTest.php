@@ -173,4 +173,10 @@ describe('pdfToImages', function (): void {
 
         expect($capturedData['quality'])->toBe(80);
     });
+
+    it('throws RuntimeException when bridge returns native error', function (): void {
+        stubNativephpCall(fn () => json_encode(['error' => 'PDF file not found']));
+
+        $this->scanner->pdfToImages('/path/scan.pdf');
+    })->throws(RuntimeException::class, 'PDF file not found');
 });

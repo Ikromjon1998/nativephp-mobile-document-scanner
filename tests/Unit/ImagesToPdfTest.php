@@ -154,4 +154,22 @@ describe('imagesToPdf', function (): void {
 
         $this->scanner->imagesToPdf([true]);
     })->throws(InvalidArgumentException::class, 'Each path must be a string.');
+
+    it('throws when outputPath is empty string', function (): void {
+        stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+
+        $this->scanner->imagesToPdf(['/path/scan_0.jpg'], '');
+    })->throws(InvalidArgumentException::class, 'outputPath must be a non-empty string when provided.');
+
+    it('throws when outputPath is whitespace only', function (): void {
+        stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+
+        $this->scanner->imagesToPdf(['/path/scan_0.jpg'], '   ');
+    })->throws(InvalidArgumentException::class, 'outputPath must be a non-empty string when provided.');
+
+    it('throws RuntimeException when bridge returns native error', function (): void {
+        stubNativephpCall(fn () => json_encode(['error' => 'No valid images found']));
+
+        $this->scanner->imagesToPdf(['/path/scan_0.jpg']);
+    })->throws(RuntimeException::class, 'No valid images found');
 });

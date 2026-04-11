@@ -50,6 +50,9 @@ class DocumentScanner implements DocumentScannerInterface
         $data = ['paths' => array_values($paths)];
 
         if ($outputPath !== null) {
+            if (trim($outputPath) === '') {
+                throw new \InvalidArgumentException('outputPath must be a non-empty string when provided.');
+            }
             $data['outputPath'] = $outputPath;
         }
 
@@ -175,6 +178,12 @@ class DocumentScanner implements DocumentScannerInterface
             return [];
         }
 
-        return json_decode($result, true) ?? [];
+        $decoded = json_decode($result, true) ?? [];
+
+        if (isset($decoded['error']) && is_string($decoded['error'])) {
+            throw new \RuntimeException($decoded['error']);
+        }
+
+        return $decoded;
     }
 }

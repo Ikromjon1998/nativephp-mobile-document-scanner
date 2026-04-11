@@ -18,12 +18,12 @@ class DocumentScannerDelegate: NSObject, VNDocumentCameraViewControllerDelegate 
         self.storageDir = storageDir
     }
 
-    private func storageDirectory() -> URL {
+    private func storageDirectory() throws -> URL {
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let dir = docs.appendingPathComponent(storageDir, isDirectory: true)
 
         if !FileManager.default.fileExists(atPath: dir.path) {
-            try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         }
 
         return dir
@@ -43,7 +43,16 @@ class DocumentScannerDelegate: NSObject, VNDocumentCameraViewControllerDelegate 
     ) {
         controller.dismiss(animated: true)
 
-        let dir = storageDirectory()
+        let dir: URL
+        do {
+            dir = try storageDirectory()
+        } catch {
+            dispatchEvent(
+                "Ikromjon\\DocumentScanner\\Events\\ScanFailed",
+                ["error": "Failed to create storage directory: \(error.localizedDescription)"]
+            )
+            return
+        }
         let timestamp = Int(Date().timeIntervalSince1970 * 1000)
         var paths: [String] = []
 
@@ -61,16 +70,28 @@ class DocumentScannerDelegate: NSObject, VNDocumentCameraViewControllerDelegate 
                 }
             }
 
-            try? data.write(to: pdfPath)
-            paths.append(pdfPath.path)
+            do {
+                try data.write(to: pdfPath)
+                paths.append(pdfPath.path)
+            } catch {
+                dispatchEvent(
+                    "Ikromjon\\DocumentScanner\\Events\\ScanFailed",
+                    ["error": "Failed to write PDF: \(error.localizedDescription)"]
+                )
+                return
+            }
         } else {
             for i in 0..<scan.pageCount {
                 let image = scan.imageOfPage(at: i)
                 let filePath = dir.appendingPathComponent("scan_\(timestamp)_\(i).jpg")
 
                 if let jpegData = image.jpegData(compressionQuality: jpegQuality) {
-                    try? jpegData.write(to: filePath)
-                    paths.append(filePath.path)
+                    do {
+                        try jpegData.write(to: filePath)
+                        paths.append(filePath.path)
+                    } catch {
+                        // Skip pages that fail to write
+                    }
                 }
             }
         }
@@ -171,7 +192,11 @@ enum DocumentScannerFunctions {
             let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let dir = docs.appendingPathComponent(storageDir, isDirectory: true)
             if !FileManager.default.fileExists(atPath: dir.path) {
-                try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+                do {
+                    try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+                } catch {
+                    return ["error": "Failed to create storage directory: \(error.localizedDescription)"]
+                }
             }
 
             let timestamp = Int(Date().timeIntervalSince1970 * 1000)
@@ -205,7 +230,11 @@ enum DocumentScannerFunctions {
                 }
             }
 
-            try? data.write(to: destURL)
+            do {
+                try data.write(to: destURL)
+            } catch {
+                return ["error": "Failed to write PDF: \(error.localizedDescription)"]
+            }
 
             if let send = LaravelBridge.shared.send {
                 send(
@@ -237,7 +266,11 @@ enum DocumentScannerFunctions {
             let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let dir = docs.appendingPathComponent(storageDir, isDirectory: true)
             if !FileManager.default.fileExists(atPath: dir.path) {
-                try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+                do {
+                    try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+                } catch {
+                    return ["error": "Failed to create storage directory: \(error.localizedDescription)"]
+                }
             }
 
             let timestamp = Int(Date().timeIntervalSince1970 * 1000)
@@ -265,8 +298,12 @@ enum DocumentScannerFunctions {
 
                 let filePath = dir.appendingPathComponent("page_\(timestamp)_\(i).jpg")
                 if let jpegData = image.jpegData(compressionQuality: jpegQuality) {
-                    try? jpegData.write(to: filePath)
-                    paths.append(filePath.path)
+                    do {
+                        try jpegData.write(to: filePath)
+                        paths.append(filePath.path)
+                    } catch {
+                        // Skip pages that fail to write
+                    }
                 }
             }
 
