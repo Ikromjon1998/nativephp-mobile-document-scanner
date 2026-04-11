@@ -55,7 +55,9 @@ $result = DocumentScanner::imagesToPdf($paths, '/custom/output.pdf');
 
 **Validation:**
 - `$paths` must be a non-empty array of strings
+- `$outputPath` must be a non-empty string when provided
 - Throws `InvalidArgumentException` on invalid input
+- Throws `RuntimeException` if the native layer returns an error (e.g. no valid images found, write failure)
 
 ### `pdfToImages(string $pdfPath, ?int $quality = 80): array`
 
@@ -76,6 +78,7 @@ $result = DocumentScanner::pdfToImages('/path/scan.pdf', 50);
 - `$pdfPath` must be a non-empty string
 - `$quality` must be between 1 and 100 (if provided)
 - Throws `InvalidArgumentException` on invalid input
+- Throws `RuntimeException` if the native layer returns an error (e.g. PDF not found, write failure)
 
 ---
 

@@ -100,7 +100,7 @@ class DocumentScannerDelegate: NSObject, VNDocumentCameraViewControllerDelegate 
             "Ikromjon\\DocumentScanner\\Events\\DocumentScanned",
             [
                 "paths": paths,
-                "pageCount": scan.pageCount,
+                "pageCount": paths.count,
                 "outputFormat": outputFormat,
             ]
         )
