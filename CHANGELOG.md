@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-04-10
+
+### Added
+
+- `imagesToPdf(array $paths, ?string $outputPath = null)` — combine JPEG images into a single PDF using native platform APIs (Android `PdfDocument`, iOS `UIGraphicsPDFRenderer`)
+- `pdfToImages(string $pdfPath, ?int $quality = 80)` — extract page thumbnails from a PDF as JPEG images (Android `PdfRenderer`, iOS `PDFDocument`)
+- `PdfCreated` event dispatched when `imagesToPdf()` completes
+- `imagesToPdf()` and `pdfToImages()` added to `DocumentScannerInterface` contract
+- JS wrappers: `imagesToPdf(paths, outputPath?)` and `pdfToImages(pdfPath, quality?)`
+- Bridge functions: `DocumentScanner.ImagesToPdf` and `DocumentScanner.PdfToImages`
+- Input validation for both methods with `InvalidArgumentException` on failure
+
 ## [1.3.0] - 2026-04-09
 
 ### Added
@@ -62,6 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pest test suite with full coverage
 - `declare(strict_types=1)` in all PHP files
 
+[1.4.0]: https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/releases/tag/v1.4.0
 [1.3.0]: https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/releases/tag/v1.3.0
 [1.2.0]: https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/releases/tag/v1.2.0
 [1.1.0]: https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/releases/tag/v1.1.0

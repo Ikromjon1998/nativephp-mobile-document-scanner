@@ -165,4 +165,16 @@ describe('interface contract', function (): void {
 
         expect($reflection->hasMethod('scan'))->toBeTrue();
     });
+
+    it('has the imagesToPdf method', function (): void {
+        $reflection = new ReflectionClass(DocumentScanner::class);
+
+        expect($reflection->hasMethod('imagesToPdf'))->toBeTrue();
+    });
+
+    it('has the pdfToImages method', function (): void {
+        $reflection = new ReflectionClass(DocumentScanner::class);
+
+        expect($reflection->hasMethod('pdfToImages'))->toBeTrue();
+    });
 });

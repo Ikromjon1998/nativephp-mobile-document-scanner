@@ -50,6 +50,38 @@ export async function scan(options = {}) {
     return bridgeCall('DocumentScanner.Scan', options);
 }
 
+/**
+ * Combine image files into a single PDF.
+ *
+ * Returns the output path directly and also dispatches a PdfCreated event.
+ *
+ * @param {string[]} paths - Array of image file paths to combine
+ * @param {string} [outputPath] - Optional output path for the PDF
+ * @returns {Promise<{path: string}>}
+ */
+export async function imagesToPdf(paths, outputPath) {
+    const params = { paths };
+    if (outputPath) {
+        params.outputPath = outputPath;
+    }
+    return bridgeCall('DocumentScanner.ImagesToPdf', params);
+}
+
+/**
+ * Extract page thumbnails from a PDF as JPEG images.
+ *
+ * @param {string} pdfPath - Path to the PDF file
+ * @param {number} [quality=80] - JPEG quality (1-100)
+ * @returns {Promise<{paths: string[]}>}
+ */
+export async function pdfToImages(pdfPath, quality) {
+    const params = { pdfPath };
+    if (quality !== undefined) {
+        params.quality = quality;
+    }
+    return bridgeCall('DocumentScanner.PdfToImages', params);
+}
+
 // ---------------------------------------------------------------------------
 // Event Constants
 // ---------------------------------------------------------------------------
@@ -69,4 +101,5 @@ export const Events = {
     DocumentScanned: 'Ikromjon\\DocumentScanner\\Events\\DocumentScanned',
     ScanCancelled: 'Ikromjon\\DocumentScanner\\Events\\ScanCancelled',
     ScanFailed: 'Ikromjon\\DocumentScanner\\Events\\ScanFailed',
+    PdfCreated: 'Ikromjon\\DocumentScanner\\Events\\PdfCreated',
 };

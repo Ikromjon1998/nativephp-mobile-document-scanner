@@ -29,3 +29,19 @@ it('proxies scan with no options', function (): void {
 
     expect($result)->toBe(['success' => true]);
 });
+
+it('proxies imagesToPdf calls', function (): void {
+    stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+
+    $result = DocumentScanner::imagesToPdf(['/path/scan_0.jpg']);
+
+    expect($result)->toBe(['path' => '/output/combined.pdf']);
+});
+
+it('proxies pdfToImages calls', function (): void {
+    stubNativephpCall(fn () => json_encode(['paths' => ['/output/page_0.jpg']]));
+
+    $result = DocumentScanner::pdfToImages('/path/scan.pdf');
+
+    expect($result)->toBe(['paths' => ['/output/page_0.jpg']]);
+});

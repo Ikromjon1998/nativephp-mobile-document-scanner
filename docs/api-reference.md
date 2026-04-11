@@ -33,6 +33,55 @@ DocumentScanner::scan(new ScanOptions(
 ));
 ```
 
+### `imagesToPdf(array $paths, ?string $outputPath = null): array`
+
+Combines image files into a single PDF using native platform APIs. Works independently of scanning — can convert any JPEG files.
+
+Returns `['path' => '/abs/path/to/output.pdf']` on success, or `[]` if the bridge is unavailable.
+
+Dispatches a `PdfCreated` event on completion.
+
+```php
+// Combine scanned pages into a PDF
+$result = DocumentScanner::imagesToPdf([
+    '/path/scan_0.jpg',
+    '/path/scan_1.jpg',
+]);
+// $result['path'] => '/path/combined_1712345678.pdf'
+
+// Specify output path
+$result = DocumentScanner::imagesToPdf($paths, '/custom/output.pdf');
+```
+
+**Validation:**
+- `$paths` must be a non-empty array of strings
+- `$outputPath` must be a non-empty string when provided
+- Throws `InvalidArgumentException` on invalid input
+- Throws `RuntimeException` if the native layer returns an error (e.g. no valid images found, write failure)
+
+### `pdfToImages(string $pdfPath, ?int $quality = 80): array`
+
+Extracts page thumbnails from a PDF as JPEG images using native platform APIs.
+
+Returns `['paths' => ['/path/page_0.jpg', ...]]` on success, or `[]` if the bridge is unavailable.
+
+```php
+// Extract page thumbnails
+$result = DocumentScanner::pdfToImages('/path/scan.pdf');
+// $result['paths'] => ['/path/page_0.jpg', '/path/page_1.jpg']
+
+// Custom quality
+$result = DocumentScanner::pdfToImages('/path/scan.pdf', 50);
+```
+
+**Validation:**
+- `$pdfPath` must be a non-empty string
+- `$quality` must be between 1 and 100 (if provided)
+- Throws `InvalidArgumentException` on invalid input
+- Throws `RuntimeException` if the native layer returns an error (e.g. PDF not found, write failure)
+
+---
+
 ## ScanOptions DTO
 
 ```php
@@ -153,6 +202,18 @@ use Ikromjon\DocumentScanner\Events\ScanFailed;
 | -------- | -------- | ------------- |
 | `$error` | `string` | Error message |
 
+### PdfCreated
+
+Fired when `imagesToPdf()` completes successfully.
+
+```php
+use Ikromjon\DocumentScanner\Events\PdfCreated;
+```
+
+| Property | Type     | Description              |
+| -------- | -------- | ------------------------ |
+| `$path`  | `string` | Absolute path to the PDF |
+
 ## Validation
 
 ```php
@@ -185,6 +246,8 @@ Interface for the scanner service. Useful for dependency injection and testing:
 
 ```php
 public function scan(ScanOptions|array $options = []): array;
+public function imagesToPdf(array $paths, ?string $outputPath = null): array;
+public function pdfToImages(string $pdfPath, ?int $quality = 80): array;
 ```
 
 Bind your own implementation:

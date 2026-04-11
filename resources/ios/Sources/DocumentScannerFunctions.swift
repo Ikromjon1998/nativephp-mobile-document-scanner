@@ -1,6 +1,7 @@
 import Foundation
-import VisionKit
+import PDFKit
 import UIKit
+import VisionKit
 
 // MARK: - Scanner Delegate
 
@@ -17,12 +18,12 @@ class DocumentScannerDelegate: NSObject, VNDocumentCameraViewControllerDelegate 
         self.storageDir = storageDir
     }
 
-    private func storageDirectory() -> URL {
+    private func storageDirectory() throws -> URL {
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let dir = docs.appendingPathComponent(storageDir, isDirectory: true)
 
         if !FileManager.default.fileExists(atPath: dir.path) {
-            try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         }
 
         return dir
@@ -42,7 +43,16 @@ class DocumentScannerDelegate: NSObject, VNDocumentCameraViewControllerDelegate 
     ) {
         controller.dismiss(animated: true)
 
-        let dir = storageDirectory()
+        let dir: URL
+        do {
+            dir = try storageDirectory()
+        } catch {
+            dispatchEvent(
+                "Ikromjon\\DocumentScanner\\Events\\ScanFailed",
+                ["error": "Failed to create storage directory: \(error.localizedDescription)"]
+            )
+            return
+        }
         let timestamp = Int(Date().timeIntervalSince1970 * 1000)
         var paths: [String] = []
 
@@ -60,16 +70,28 @@ class DocumentScannerDelegate: NSObject, VNDocumentCameraViewControllerDelegate 
                 }
             }
 
-            try? data.write(to: pdfPath)
-            paths.append(pdfPath.path)
+            do {
+                try data.write(to: pdfPath)
+                paths.append(pdfPath.path)
+            } catch {
+                dispatchEvent(
+                    "Ikromjon\\DocumentScanner\\Events\\ScanFailed",
+                    ["error": "Failed to write PDF: \(error.localizedDescription)"]
+                )
+                return
+            }
         } else {
             for i in 0..<scan.pageCount {
                 let image = scan.imageOfPage(at: i)
                 let filePath = dir.appendingPathComponent("scan_\(timestamp)_\(i).jpg")
 
                 if let jpegData = image.jpegData(compressionQuality: jpegQuality) {
-                    try? jpegData.write(to: filePath)
-                    paths.append(filePath.path)
+                    do {
+                        try jpegData.write(to: filePath)
+                        paths.append(filePath.path)
+                    } catch {
+                        // Skip pages that fail to write
+                    }
                 }
             }
         }
@@ -78,7 +100,7 @@ class DocumentScannerDelegate: NSObject, VNDocumentCameraViewControllerDelegate 
             "Ikromjon\\DocumentScanner\\Events\\DocumentScanned",
             [
                 "paths": paths,
-                "pageCount": scan.pageCount,
+                "pageCount": paths.count,
                 "outputFormat": outputFormat,
             ]
         )
@@ -153,6 +175,139 @@ enum DocumentScannerFunctions {
             }
 
             return ["success": true]
+        }
+    }
+
+    class ImagesToPdf: BridgeFunction {
+        func execute(parameters: [String: Any]) throws -> [String: Any] {
+            let config = parameters["_config"] as? [String: Any] ?? [:]
+            let paths = parameters["paths"] as? [String] ?? []
+            let outputPath = parameters["outputPath"] as? String
+            let storageDir = config["storage_directory"] as? String ?? "scanned-documents"
+
+            guard !paths.isEmpty else {
+                return ["error": "No image paths provided"]
+            }
+
+            let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let dir = docs.appendingPathComponent(storageDir, isDirectory: true)
+            if !FileManager.default.fileExists(atPath: dir.path) {
+                do {
+                    try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+                } catch {
+                    return ["error": "Failed to create storage directory: \(error.localizedDescription)"]
+                }
+            }
+
+            let timestamp = Int(Date().timeIntervalSince1970 * 1000)
+            let destURL: URL
+            if let outputPath = outputPath {
+                destURL = URL(fileURLWithPath: outputPath)
+            } else {
+                destURL = dir.appendingPathComponent("combined_\(timestamp).pdf")
+            }
+
+            // Collect valid images
+            var images: [UIImage] = []
+            for path in paths {
+                if let image = UIImage(contentsOfFile: path) {
+                    images.append(image)
+                }
+            }
+
+            guard !images.isEmpty else {
+                return ["error": "No valid images found"]
+            }
+
+            // Create PDF with per-image page sizes
+            let renderer = UIGraphicsPDFRenderer(bounds: .zero)
+            let data = renderer.pdfData { context in
+                for image in images {
+                    let pageSize = CGSize(width: image.size.width, height: image.size.height)
+                    let pageRect = CGRect(origin: .zero, size: pageSize)
+                    context.beginPage(withBounds: pageRect, pageInfo: [:])
+                    image.draw(in: pageRect)
+                }
+            }
+
+            do {
+                try data.write(to: destURL)
+            } catch {
+                return ["error": "Failed to write PDF: \(error.localizedDescription)"]
+            }
+
+            if let send = LaravelBridge.shared.send {
+                send(
+                    "Ikromjon\\DocumentScanner\\Events\\PdfCreated",
+                    ["path": destURL.path]
+                )
+            }
+
+            return ["path": destURL.path]
+        }
+    }
+
+    class PdfToImages: BridgeFunction {
+        func execute(parameters: [String: Any]) throws -> [String: Any] {
+            let config = parameters["_config"] as? [String: Any] ?? [:]
+            let pdfPath = parameters["pdfPath"] as? String ?? ""
+            let quality = parameters["quality"] as? Int ?? 80
+            let storageDir = config["storage_directory"] as? String ?? "scanned-documents"
+
+            guard !pdfPath.isEmpty else {
+                return ["error": "No PDF path provided"]
+            }
+
+            let pdfURL = URL(fileURLWithPath: pdfPath)
+            guard let pdfDocument = PDFDocument(url: pdfURL) else {
+                return ["error": "Failed to open PDF"]
+            }
+
+            let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let dir = docs.appendingPathComponent(storageDir, isDirectory: true)
+            if !FileManager.default.fileExists(atPath: dir.path) {
+                do {
+                    try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+                } catch {
+                    return ["error": "Failed to create storage directory: \(error.localizedDescription)"]
+                }
+            }
+
+            let timestamp = Int(Date().timeIntervalSince1970 * 1000)
+            let jpegQuality = CGFloat(max(1, min(100, quality))) / 100.0
+            var paths: [String] = []
+
+            for i in 0..<pdfDocument.pageCount {
+                guard let page = pdfDocument.page(at: i) else { continue }
+
+                let pageRect = page.bounds(for: .mediaBox)
+                let scale: CGFloat = 2.0
+                let size = CGSize(
+                    width: pageRect.width * scale,
+                    height: pageRect.height * scale
+                )
+
+                let renderer = UIGraphicsImageRenderer(size: size)
+                let image = renderer.image { context in
+                    UIColor.white.setFill()
+                    context.fill(CGRect(origin: .zero, size: size))
+                    context.cgContext.translateBy(x: 0, y: size.height)
+                    context.cgContext.scaleBy(x: scale, y: -scale)
+                    page.draw(with: .mediaBox, to: context.cgContext)
+                }
+
+                let filePath = dir.appendingPathComponent("page_\(timestamp)_\(i).jpg")
+                if let jpegData = image.jpegData(compressionQuality: jpegQuality) {
+                    do {
+                        try jpegData.write(to: filePath)
+                        paths.append(filePath.path)
+                    } catch {
+                        // Skip pages that fail to write
+                    }
+                }
+            }
+
+            return ["paths": paths]
         }
     }
 }

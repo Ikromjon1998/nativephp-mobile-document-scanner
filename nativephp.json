@@ -7,6 +7,18 @@
             "android": "com.nativephp.documentscanner.DocumentScannerFunctions.Scan",
             "ios": "DocumentScannerFunctions.Scan",
             "description": "Open the document scanner and return scanned page image paths"
+        },
+        {
+            "name": "DocumentScanner.ImagesToPdf",
+            "android": "com.nativephp.documentscanner.DocumentScannerFunctions.ImagesToPdf",
+            "ios": "DocumentScannerFunctions.ImagesToPdf",
+            "description": "Combine image files into a single PDF"
+        },
+        {
+            "name": "DocumentScanner.PdfToImages",
+            "android": "com.nativephp.documentscanner.DocumentScannerFunctions.PdfToImages",
+            "ios": "DocumentScannerFunctions.PdfToImages",
+            "description": "Extract page thumbnails from a PDF as JPEG images"
         }
     ],
 
@@ -32,6 +44,7 @@
     "events": [
         "Ikromjon\\DocumentScanner\\Events\\DocumentScanned",
         "Ikromjon\\DocumentScanner\\Events\\ScanCancelled",
-        "Ikromjon\\DocumentScanner\\Events\\ScanFailed"
+        "Ikromjon\\DocumentScanner\\Events\\ScanFailed",
+        "Ikromjon\\DocumentScanner\\Events\\PdfCreated"
     ]
 }

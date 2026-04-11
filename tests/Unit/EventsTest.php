@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Ikromjon\DocumentScanner\Events\DocumentScanned;
+use Ikromjon\DocumentScanner\Events\PdfCreated;
 use Ikromjon\DocumentScanner\Events\ScanCancelled;
 use Ikromjon\DocumentScanner\Events\ScanFailed;
 
@@ -62,5 +63,21 @@ describe('ScanFailed', function (): void {
         $reflection = new ReflectionClass($event);
 
         expect($reflection->getProperty('error')->isReadOnly())->toBeTrue();
+    });
+});
+
+describe('PdfCreated', function (): void {
+    it('stores path', function (): void {
+        $event = new PdfCreated(path: '/path/to/combined.pdf');
+
+        expect($event->path)->toBe('/path/to/combined.pdf');
+    });
+
+    it('has readonly path property', function (): void {
+        $event = new PdfCreated('/path/to/file.pdf');
+
+        $reflection = new ReflectionClass($event);
+
+        expect($reflection->getProperty('path')->isReadOnly())->toBeTrue();
     });
 });

@@ -18,8 +18,6 @@ Feature roadmap for the NativePHP Mobile Document Scanner plugin.
 
 | # | Epic | Priority | Status | Doc |
 |---|------|----------|--------|-----|
-| 14 | JPEG-to-PDF Conversion | High | Not Started | [docs/epics/14-jpeg-to-pdf-conversion.md](docs/epics/14-jpeg-to-pdf-conversion.md) |
-| 15 | Page Thumbnail Extraction from PDF | Medium | Not Started | [docs/epics/15-page-thumbnail-extraction.md](docs/epics/15-page-thumbnail-extraction.md) |
 | 4 | Scanned File Management | Medium | Not Started | [docs/epics/04-file-management.md](docs/epics/04-file-management.md) |
 | 5 | Scan Result DTO | Low | Not Started | [docs/epics/05-scan-result-dto.md](docs/epics/05-scan-result-dto.md) |
 | 6 | Image Post-Processing | Low | Not Started | [docs/epics/06-image-post-processing.md](docs/epics/06-image-post-processing.md) |
@@ -33,9 +31,12 @@ Feature roadmap for the NativePHP Mobile Document Scanner plugin.
 | 1 | Gallery Import | [docs/epics/01-gallery-import.md](docs/epics/01-gallery-import.md) |
 | 2 | Scanner Mode Selection | [docs/epics/02-scanner-mode.md](docs/epics/02-scanner-mode.md) |
 | 8 | Bridge API Verification | [docs/epics/08-bridge-api-verification.md](docs/epics/08-bridge-api-verification.md) |
+| 14 | JPEG-to-PDF Conversion | [docs/epics/14-jpeg-to-pdf-conversion.md](docs/epics/14-jpeg-to-pdf-conversion.md) |
+| 15 | Page Thumbnail Extraction from PDF | [docs/epics/15-page-thumbnail-extraction.md](docs/epics/15-page-thumbnail-extraction.md) |
 
 ## Release History
 
+- v1.4.0: JPEG-to-PDF conversion, PDF page thumbnails (Epics 14 & 15)
 - v1.3.0: Warning log, quick-start README, real native linting, coverage 95% (Epics 9 & 10)
 - v1.2.0: Scanner mode selection (Epic 2)
 - v1.1.0: Gallery import (Epic 1)
