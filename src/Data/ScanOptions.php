@@ -62,20 +62,29 @@ final readonly class ScanOptions
 
         ScanValidator::validate($data);
 
-        $androidNotes = [];
+        return $data;
+    }
+
+    /**
+     * Return debug hints about Android-only options that are currently set.
+     *
+     * @return array<int, string>
+     */
+    public function platformNotes(): array
+    {
+        $notes = [];
 
         if ($this->galleryImport) {
-            $androidNotes[] = 'galleryImport is Android only — ignored on iOS';
+            $notes[] = 'galleryImport is Android only — ignored on iOS';
         }
 
+        $scannerMode = $this->scannerMode instanceof ScannerMode
+            ? $this->scannerMode->value
+            : $this->scannerMode;
         if ($scannerMode !== ScannerMode::Full->value) {
-            $androidNotes[] = 'scannerMode is Android only — ignored on iOS';
+            $notes[] = 'scannerMode is Android only — ignored on iOS';
         }
 
-        if ($androidNotes !== []) {
-            $data['_platformNotes'] = $androidNotes;
-        }
-
-        return $data;
+        return $notes;
     }
 }

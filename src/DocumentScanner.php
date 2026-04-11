@@ -175,6 +175,12 @@ class DocumentScanner implements DocumentScannerInterface
             return [];
         }
 
-        return json_decode($result, true) ?? [];
+        $decoded = json_decode($result, true) ?? [];
+
+        if (isset($decoded['error']) && is_string($decoded['error'])) {
+            throw new \RuntimeException($decoded['error']);
+        }
+
+        return $decoded;
     }
 }
