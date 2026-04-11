@@ -35,11 +35,7 @@ object DocumentScannerFunctions {
     private var defaultScannerMode = "full"
 
     private var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>? = null
-
-    // Captured at scan launch time and consumed in the result callback.
-    // Safe because the scanner is a modal activity — only one scan at a time.
-    @Volatile
-    private var pendingOutputFormat = "jpeg"
+    private var currentOutputFormat = "jpeg"
 
     fun applyConfig(config: Map<*, *>) {
         (config["default_max_pages"] as? Number)?.let { defaultMaxPages = it.toInt() }
@@ -93,9 +89,6 @@ object DocumentScannerFunctions {
         activity: FragmentActivity,
         data: Intent?,
     ) {
-        // Snapshot the format so it stays consistent within this callback.
-        val outputFormat = pendingOutputFormat
-
         val scanResult = GmsDocumentScanningResult.fromActivityResultIntent(data)
 
         if (scanResult == null) {
@@ -112,7 +105,7 @@ object DocumentScannerFunctions {
         val timestamp = System.currentTimeMillis()
         val paths = JSONArray()
 
-        if (outputFormat == "pdf") {
+        if (currentOutputFormat == "pdf") {
             scanResult.pdf?.let { pdf ->
                 val destFile = File(dir, "scan_$timestamp.pdf")
                 pdf.uri.let { uri ->
@@ -139,7 +132,7 @@ object DocumentScannerFunctions {
         }
 
         val pageCount =
-            if (outputFormat == "pdf") {
+            if (currentOutputFormat == "pdf") {
                 scanResult.pages?.size ?: 1
             } else {
                 scanResult.pages?.size ?: 0
@@ -149,7 +142,7 @@ object DocumentScannerFunctions {
             JSONObject()
                 .put("paths", paths)
                 .put("pageCount", pageCount)
-                .put("outputFormat", outputFormat)
+                .put("outputFormat", currentOutputFormat)
 
         dispatchEvent(
             activity,
@@ -175,7 +168,7 @@ object DocumentScannerFunctions {
             val galleryImport = parameters["galleryImport"] as? Boolean ?: defaultGalleryImport
             val scannerMode = parameters["scannerMode"] as? String ?: defaultScannerMode
 
-            pendingOutputFormat = outputFormat
+            currentOutputFormat = outputFormat
 
             val mode =
                 when (scannerMode) {
@@ -255,28 +248,22 @@ object DocumentScannerFunctions {
             }
 
             val pdfDocument = PdfDocument()
-            var pageIndex = 0
 
             try {
-                paths.forEach { imagePath ->
+                paths.forEachIndexed { index, imagePath ->
                     val file = File(imagePath)
-                    if (!file.exists()) return@forEach
+                    if (!file.exists()) return@forEachIndexed
 
-                    val bitmap = BitmapFactory.decodeFile(imagePath) ?: return@forEach
+                    val bitmap = BitmapFactory.decodeFile(imagePath) ?: return@forEachIndexed
 
                     val pageWidth = bitmap.width
                     val pageHeight = bitmap.height
-                    val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageIndex).create()
+                    val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, index).create()
                     val page = pdfDocument.startPage(pageInfo)
 
                     page.canvas.drawBitmap(bitmap, 0f, 0f, null)
                     pdfDocument.finishPage(page)
                     bitmap.recycle()
-                    pageIndex++
-                }
-
-                if (pageIndex == 0) {
-                    return mapOf("error" to "No valid images found")
                 }
 
                 FileOutputStream(destFile).use { output ->

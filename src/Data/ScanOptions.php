@@ -10,13 +10,6 @@ use Ikromjon\DocumentScanner\Validation\ScanValidator;
 
 final readonly class ScanOptions
 {
-    /**
-     * @param  int  $maxPages  Max pages to scan (0 = unlimited)
-     * @param  OutputFormat|string  $outputFormat  Output format: 'jpeg' or 'pdf'
-     * @param  int  $jpegQuality  JPEG compression quality (1-100)
-     * @param  bool  $galleryImport  Allow importing from device gallery. Android only — ignored on iOS.
-     * @param  ScannerMode|string  $scannerMode  ML Kit scanner processing mode. Android only — ignored on iOS.
-     */
     public function __construct(
         public int $maxPages = 0,
         public OutputFormat|string $outputFormat = OutputFormat::Jpeg,
@@ -63,28 +56,5 @@ final readonly class ScanOptions
         ScanValidator::validate($data);
 
         return $data;
-    }
-
-    /**
-     * Return debug hints about Android-only options that are currently set.
-     *
-     * @return array<int, string>
-     */
-    public function platformNotes(): array
-    {
-        $notes = [];
-
-        if ($this->galleryImport) {
-            $notes[] = 'galleryImport is Android only — ignored on iOS';
-        }
-
-        $scannerMode = $this->scannerMode instanceof ScannerMode
-            ? $this->scannerMode->value
-            : $this->scannerMode;
-        if ($scannerMode !== ScannerMode::Full->value) {
-            $notes[] = 'scannerMode is Android only — ignored on iOS';
-        }
-
-        return $notes;
     }
 }

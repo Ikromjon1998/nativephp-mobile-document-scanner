@@ -239,20 +239,6 @@ describe('scan', function (): void {
         $this->scanner->scan(['scannerMode' => 'turbo']);
     })->throws(InvalidArgumentException::class, 'scannerMode must be "base", "filter", or "full".');
 
-    it('throws RuntimeException when bridge returns an error', function (): void {
-        stubNativephpCall(fn () => json_encode(['error' => 'PDF file not found']));
-
-        $this->scanner->imagesToPdf(['/path/image.jpg']);
-    })->throws(RuntimeException::class, 'PDF file not found');
-
-    it('does not throw when error key is not a string', function (): void {
-        stubNativephpCall(fn () => json_encode(['error' => 123, 'data' => 'ok']));
-
-        $result = $this->scanner->scan();
-
-        expect($result)->toBe(['error' => 123, 'data' => 'ok']);
-    });
-
     it('returns empty array when payload cannot be json encoded', function (): void {
         stubNativephpCall(fn () => json_encode(['success' => true]));
 

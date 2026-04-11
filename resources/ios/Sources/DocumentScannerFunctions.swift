@@ -61,28 +61,16 @@ class DocumentScannerDelegate: NSObject, VNDocumentCameraViewControllerDelegate 
                 }
             }
 
-            do {
-                try data.write(to: pdfPath)
-                paths.append(pdfPath.path)
-            } catch {
-                dispatchEvent(
-                    "Ikromjon\\DocumentScanner\\Events\\ScanFailed",
-                    ["error": "Failed to write PDF: \(error.localizedDescription)"]
-                )
-                return
-            }
+            try? data.write(to: pdfPath)
+            paths.append(pdfPath.path)
         } else {
             for i in 0..<scan.pageCount {
                 let image = scan.imageOfPage(at: i)
                 let filePath = dir.appendingPathComponent("scan_\(timestamp)_\(i).jpg")
 
                 if let jpegData = image.jpegData(compressionQuality: jpegQuality) {
-                    do {
-                        try jpegData.write(to: filePath)
-                        paths.append(filePath.path)
-                    } catch {
-                        // Skip pages that fail to write
-                    }
+                    try? jpegData.write(to: filePath)
+                    paths.append(filePath.path)
                 }
             }
         }
@@ -217,11 +205,7 @@ enum DocumentScannerFunctions {
                 }
             }
 
-            do {
-                try data.write(to: destURL)
-            } catch {
-                return ["error": "Failed to write PDF: \(error.localizedDescription)"]
-            }
+            try? data.write(to: destURL)
 
             if let send = LaravelBridge.shared.send {
                 send(
@@ -281,12 +265,8 @@ enum DocumentScannerFunctions {
 
                 let filePath = dir.appendingPathComponent("page_\(timestamp)_\(i).jpg")
                 if let jpegData = image.jpegData(compressionQuality: jpegQuality) {
-                    do {
-                        try jpegData.write(to: filePath)
-                        paths.append(filePath.path)
-                    } catch {
-                        // Skip pages that fail to write
-                    }
+                    try? jpegData.write(to: filePath)
+                    paths.append(filePath.path)
                 }
             }
 
