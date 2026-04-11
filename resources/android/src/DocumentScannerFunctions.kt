@@ -237,11 +237,12 @@ object DocumentScannerFunctions {
 
             val dir = getStorageDir(activity)
             val timestamp = System.currentTimeMillis()
-            val destFile = if (outputPath != null) {
-                File(outputPath)
-            } else {
-                File(dir, "combined_$timestamp.pdf")
-            }
+            val destFile =
+                if (outputPath != null) {
+                    File(outputPath)
+                } else {
+                    File(dir, "combined_$timestamp.pdf")
+                }
 
             destFile.parentFile?.let { parent ->
                 if (!parent.exists()) parent.mkdirs()
@@ -313,11 +314,12 @@ object DocumentScannerFunctions {
             try {
                 for (i in 0 until renderer.pageCount) {
                     val page = renderer.openPage(i)
-                    val bitmap = Bitmap.createBitmap(
-                        page.width * 2,
-                        page.height * 2,
-                        Bitmap.Config.ARGB_8888,
-                    )
+                    val bitmap =
+                        Bitmap.createBitmap(
+                            page.width * 2,
+                            page.height * 2,
+                            Bitmap.Config.ARGB_8888,
+                        )
                     page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
                     page.close()
 
