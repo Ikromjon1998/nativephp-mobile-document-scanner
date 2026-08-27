@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-08-28
+
+### Fixed
+
+- `jpegQuality` is now honoured on Android — scanned pages are re-encoded at the requested
+  quality instead of being copied verbatim from ML Kit (the option was previously a no-op)
+- `maxPages` is now enforced on iOS — VisionKit has no page-limit API, so the plugin truncates
+  to the first `maxPages` pages after scanning (the option was previously a no-op)
+- iOS PDF output no longer stretches every page to US Letter (612x792); each page is now sized
+  to its source image, matching Android
+- `pageCount` in `DocumentScanned` now reports the number of scanned pages on both platforms
+  for PDF output (iOS previously reported `1`, the number of files)
+
+### Changed
+
+- **Breaking:** raised platform baselines to the NativePHP Mobile v3 minimums —
+  Android `min_version` 21 → 29, iOS `min_version` 13.0 → 18.0
+- Declared `illuminate/support` (`^11.0|^12.0|^13.0`) as an explicit dependency instead of
+  relying on transitive resolution
+- Removed the `ocr` keyword from `composer.json` — the plugin does not perform OCR
+
 ## [1.4.0] - 2026-04-10
 
 ### Added
@@ -74,6 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pest test suite with full coverage
 - `declare(strict_types=1)` in all PHP files
 
+[1.5.0]: https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/releases/tag/v1.5.0
 [1.4.0]: https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/releases/tag/v1.4.0
 [1.3.0]: https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/releases/tag/v1.3.0
 [1.2.0]: https://github.com/Ikromjon1998/nativephp-mobile-document-scanner/releases/tag/v1.2.0

@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.pdf.PdfDocument
 import android.graphics.pdf.PdfRenderer
+import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.activity.result.ActivityResult
@@ -36,6 +37,7 @@ object DocumentScannerFunctions {
 
     private var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>? = null
     private var currentOutputFormat = "jpeg"
+    private var currentJpegQuality = 90
 
     fun applyConfig(config: Map<*, *>) {
         (config["default_max_pages"] as? Number)?.let { defaultMaxPages = it.toInt() }
@@ -85,6 +87,47 @@ object DocumentScannerFunctions {
             }
     }
 
+    /**
+     * Write a scanned page to [destFile] as JPEG at the requested quality.
+     *
+     * ML Kit hands back pages already encoded at its own quality, so honouring
+     * `jpegQuality` means decoding and re-encoding. Falls back to a raw byte
+     * copy if the page cannot be decoded.
+     */
+    private fun writeJpeg(
+        activity: FragmentActivity,
+        uri: Uri,
+        destFile: File,
+        quality: Int,
+    ) {
+        val bitmap =
+            try {
+                activity.contentResolver.openInputStream(uri)?.use { input ->
+                    BitmapFactory.decodeStream(input)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to decode scanned page", e)
+                null
+            }
+
+        if (bitmap == null) {
+            activity.contentResolver.openInputStream(uri)?.use { input ->
+                FileOutputStream(destFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+            return
+        }
+
+        try {
+            FileOutputStream(destFile).use { output ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, quality.coerceIn(1, 100), output)
+            }
+        } finally {
+            bitmap.recycle()
+        }
+    }
+
     private fun handleScanResult(
         activity: FragmentActivity,
         data: Intent?,
@@ -120,13 +163,7 @@ object DocumentScannerFunctions {
         } else {
             scanResult.pages?.forEachIndexed { index, page ->
                 val destFile = File(dir, "scan_${timestamp}_$index.jpg")
-                page.imageUri.let { uri ->
-                    activity.contentResolver.openInputStream(uri)?.use { input ->
-                        FileOutputStream(destFile).use { output ->
-                            input.copyTo(output)
-                        }
-                    }
-                }
+                writeJpeg(activity, page.imageUri, destFile, currentJpegQuality)
                 paths.put(destFile.absolutePath)
             }
         }
@@ -169,6 +206,7 @@ object DocumentScannerFunctions {
             val scannerMode = parameters["scannerMode"] as? String ?: defaultScannerMode
 
             currentOutputFormat = outputFormat
+            currentJpegQuality = jpegQuality.coerceIn(1, 100)
 
             val mode =
                 when (scannerMode) {

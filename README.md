@@ -126,6 +126,11 @@ DocumentScanner::scan(new ScanOptions(
 | `galleryImport` | bool                 | Android only | Allow importing from device gallery       |
 | `scannerMode`   | ScannerMode\|string  | Android only | `base`, `filter`, or `full`               |
 
+> **Platform note on `maxPages`:** Android enforces the limit inside the scanner UI (ML Kit
+> `setPageLimit`). VisionKit has no equivalent API, so on iOS the user can keep scanning past the
+> limit — the plugin keeps only the first `maxPages` pages and reports that count in
+> `DocumentScanned`.
+
 ## Full Livewire Example
 
 A complete component that scans documents and displays the results:
@@ -320,7 +325,7 @@ composer analyse
 
 - PHP 8.3+
 - NativePHP Mobile v3+
-- iOS 13+ / Android API 21+
+- iOS 18+ / Android API 29+
 
 ## License
 

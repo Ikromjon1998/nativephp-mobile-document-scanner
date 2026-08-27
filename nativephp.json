@@ -23,7 +23,7 @@
     ],
 
     "android": {
-        "min_version": 21,
+        "min_version": 29,
         "permissions": [
             "android.permission.CAMERA"
         ],
@@ -35,7 +35,7 @@
     },
 
     "ios": {
-        "min_version": "13.0",
+        "min_version": "18.0",
         "frameworks": [
             "VisionKit"
         ]
