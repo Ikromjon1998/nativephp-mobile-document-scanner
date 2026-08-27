@@ -16,7 +16,7 @@ describe('scan', function (): void {
         $capturedFunction = null;
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedFunction, &$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedFunction, &$capturedData): string|false {
             $capturedFunction = $function;
             $capturedData = json_decode($data, true);
 
@@ -42,7 +42,7 @@ describe('scan', function (): void {
     it('accepts ScanOptions DTO', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['success' => true]);
@@ -63,7 +63,7 @@ describe('scan', function (): void {
     it('converts OutputFormat enum to string', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['success' => true]);
@@ -79,7 +79,7 @@ describe('scan', function (): void {
     it('passes string outputFormat unchanged', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['success' => true]);
@@ -93,7 +93,7 @@ describe('scan', function (): void {
     });
 
     it('handles empty options array', function (): void {
-        stubNativephpCall(fn () => json_encode(['success' => true]));
+        stubNativephpCall(fn (): string|false => json_encode(['success' => true]));
 
         $result = $this->scanner->scan([]);
 
@@ -101,7 +101,7 @@ describe('scan', function (): void {
     });
 
     it('handles scan with no arguments', function (): void {
-        stubNativephpCall(fn () => json_encode(['success' => true]));
+        stubNativephpCall(fn (): string|false => json_encode(['success' => true]));
 
         $result = $this->scanner->scan();
 
@@ -127,7 +127,7 @@ describe('scan', function (): void {
     it('injects _config with default values into bridge call', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['success' => true]);
@@ -149,7 +149,7 @@ describe('scan', function (): void {
     it('passes galleryImport to bridge call', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['success' => true]);
@@ -163,7 +163,7 @@ describe('scan', function (): void {
     it('passes galleryImport via ScanOptions DTO', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['success' => true]);
@@ -176,31 +176,31 @@ describe('scan', function (): void {
     });
 
     it('throws when outputFormat is invalid', function (): void {
-        stubNativephpCall(fn () => json_encode(['success' => true]));
+        stubNativephpCall(fn (): string|false => json_encode(['success' => true]));
 
         $this->scanner->scan(['outputFormat' => 'bmp']);
     })->throws(InvalidArgumentException::class, 'outputFormat must be "jpeg" or "pdf".');
 
     it('throws when jpegQuality is below 1', function (): void {
-        stubNativephpCall(fn () => json_encode(['success' => true]));
+        stubNativephpCall(fn (): string|false => json_encode(['success' => true]));
 
         $this->scanner->scan(['jpegQuality' => 0]);
     })->throws(InvalidArgumentException::class, 'jpegQuality must be between 1 and 100.');
 
     it('throws when jpegQuality is above 100', function (): void {
-        stubNativephpCall(fn () => json_encode(['success' => true]));
+        stubNativephpCall(fn (): string|false => json_encode(['success' => true]));
 
         $this->scanner->scan(['jpegQuality' => 101]);
     })->throws(InvalidArgumentException::class, 'jpegQuality must be between 1 and 100.');
 
     it('throws when maxPages is negative', function (): void {
-        stubNativephpCall(fn () => json_encode(['success' => true]));
+        stubNativephpCall(fn (): string|false => json_encode(['success' => true]));
 
         $this->scanner->scan(['maxPages' => -1]);
     })->throws(InvalidArgumentException::class, 'maxPages must be 0 (unlimited) or a positive integer.');
 
     it('throws when galleryImport is not boolean', function (): void {
-        stubNativephpCall(fn () => json_encode(['success' => true]));
+        stubNativephpCall(fn (): string|false => json_encode(['success' => true]));
 
         $this->scanner->scan(['galleryImport' => 'yes']);
     })->throws(InvalidArgumentException::class, 'galleryImport must be a boolean.');
@@ -208,7 +208,7 @@ describe('scan', function (): void {
     it('passes scannerMode to bridge call', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['success' => true]);
@@ -222,7 +222,7 @@ describe('scan', function (): void {
     it('converts ScannerMode enum to string', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['success' => true]);
@@ -234,13 +234,13 @@ describe('scan', function (): void {
     });
 
     it('throws when scannerMode is invalid', function (): void {
-        stubNativephpCall(fn () => json_encode(['success' => true]));
+        stubNativephpCall(fn (): string|false => json_encode(['success' => true]));
 
         $this->scanner->scan(['scannerMode' => 'turbo']);
     })->throws(InvalidArgumentException::class, 'scannerMode must be "base", "filter", or "full".');
 
     it('returns empty array when payload cannot be json encoded', function (): void {
-        stubNativephpCall(fn () => json_encode(['success' => true]));
+        stubNativephpCall(fn (): string|false => json_encode(['success' => true]));
 
         // Invalid UTF-8 triggers json_encode to return false
         $scanner = new class extends DocumentScanner

@@ -130,7 +130,7 @@ describe('ScanOptions', function (): void {
     })->throws(InvalidArgumentException::class, 'scannerMode must be "base", "filter", or "full".');
 
     it('can be passed to scan method', function (): void {
-        stubNativephpCall(fn () => json_encode(['success' => true]));
+        stubNativephpCall(fn (): string|false => json_encode(['success' => true]));
 
         $scanner = new DocumentScanner;
         $result = $scanner->scan(new ScanOptions(maxPages: 1));

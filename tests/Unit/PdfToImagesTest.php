@@ -13,7 +13,7 @@ describe('pdfToImages', function (): void {
         $capturedFunction = null;
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedFunction, &$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedFunction, &$capturedData): string|false {
             $capturedFunction = $function;
             $capturedData = json_decode($data, true);
 
@@ -34,7 +34,7 @@ describe('pdfToImages', function (): void {
     it('passes custom quality', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['paths' => []]);
@@ -49,7 +49,7 @@ describe('pdfToImages', function (): void {
     it('omits quality when null', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['paths' => []]);
@@ -62,19 +62,19 @@ describe('pdfToImages', function (): void {
     });
 
     it('throws when pdfPath is empty', function (): void {
-        stubNativephpCall(fn () => json_encode(['paths' => []]));
+        stubNativephpCall(fn (): string|false => json_encode(['paths' => []]));
 
         $this->scanner->pdfToImages('');
     })->throws(InvalidArgumentException::class, 'pdfPath must be a non-empty string.');
 
     it('throws when quality is below 1', function (): void {
-        stubNativephpCall(fn () => json_encode(['paths' => []]));
+        stubNativephpCall(fn (): string|false => json_encode(['paths' => []]));
 
         $this->scanner->pdfToImages('/path/scan.pdf', 0);
     })->throws(InvalidArgumentException::class, 'quality must be between 1 and 100.');
 
     it('throws when quality is above 100', function (): void {
-        stubNativephpCall(fn () => json_encode(['paths' => []]));
+        stubNativephpCall(fn (): string|false => json_encode(['paths' => []]));
 
         $this->scanner->pdfToImages('/path/scan.pdf', 101);
     })->throws(InvalidArgumentException::class, 'quality must be between 1 and 100.');
@@ -82,7 +82,7 @@ describe('pdfToImages', function (): void {
     it('accepts quality of 1', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['paths' => []]);
@@ -96,7 +96,7 @@ describe('pdfToImages', function (): void {
     it('accepts quality of 100', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['paths' => []]);
@@ -118,7 +118,7 @@ describe('pdfToImages', function (): void {
     it('injects _config into bridge call', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['paths' => []]);
@@ -139,7 +139,7 @@ describe('pdfToImages', function (): void {
     });
 
     it('returns empty array when payload cannot be json encoded', function (): void {
-        stubNativephpCall(fn () => json_encode(['paths' => []]));
+        stubNativephpCall(fn (): string|false => json_encode(['paths' => []]));
 
         $scanner = new class extends DocumentScanner
         {
@@ -155,7 +155,7 @@ describe('pdfToImages', function (): void {
     });
 
     it('throws when quality is negative', function (): void {
-        stubNativephpCall(fn () => json_encode(['paths' => []]));
+        stubNativephpCall(fn (): string|false => json_encode(['paths' => []]));
 
         $this->scanner->pdfToImages('/path/scan.pdf', -1);
     })->throws(InvalidArgumentException::class, 'quality must be between 1 and 100.');
@@ -163,7 +163,7 @@ describe('pdfToImages', function (): void {
     it('uses default quality of 80', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['paths' => []]);
@@ -175,7 +175,7 @@ describe('pdfToImages', function (): void {
     });
 
     it('throws RuntimeException when bridge returns native error', function (): void {
-        stubNativephpCall(fn () => json_encode(['error' => 'PDF file not found']));
+        stubNativephpCall(fn (): string|false => json_encode(['error' => 'PDF file not found']));
 
         $this->scanner->pdfToImages('/path/scan.pdf');
     })->throws(RuntimeException::class, 'PDF file not found');

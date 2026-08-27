@@ -13,7 +13,7 @@ describe('imagesToPdf', function (): void {
         $capturedFunction = null;
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedFunction, &$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedFunction, &$capturedData): string|false {
             $capturedFunction = $function;
             $capturedData = json_decode($data, true);
 
@@ -33,7 +33,7 @@ describe('imagesToPdf', function (): void {
     it('passes outputPath when provided', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['path' => '/custom/output.pdf']);
@@ -51,7 +51,7 @@ describe('imagesToPdf', function (): void {
     it('does not include outputPath when null', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['path' => '/output/combined.pdf']);
@@ -66,7 +66,7 @@ describe('imagesToPdf', function (): void {
     it('re-indexes paths array', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['path' => '/output/combined.pdf']);
@@ -79,13 +79,13 @@ describe('imagesToPdf', function (): void {
     });
 
     it('throws when paths is empty', function (): void {
-        stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+        stubNativephpCall(fn (): string|false => json_encode(['path' => '/output/combined.pdf']));
 
         $this->scanner->imagesToPdf([]);
     })->throws(InvalidArgumentException::class, 'paths must be a non-empty array.');
 
     it('throws when a path is not a string', function (): void {
-        stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+        stubNativephpCall(fn (): string|false => json_encode(['path' => '/output/combined.pdf']));
 
         $this->scanner->imagesToPdf([123]);
     })->throws(InvalidArgumentException::class, 'Each path must be a string.');
@@ -101,7 +101,7 @@ describe('imagesToPdf', function (): void {
     it('injects _config into bridge call', function (): void {
         $capturedData = null;
 
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['path' => '/output/combined.pdf']);
@@ -122,7 +122,7 @@ describe('imagesToPdf', function (): void {
     });
 
     it('returns empty array when payload cannot be json encoded', function (): void {
-        stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+        stubNativephpCall(fn (): string|false => json_encode(['path' => '/output/combined.pdf']));
 
         $scanner = new class extends DocumentScanner
         {
@@ -138,37 +138,37 @@ describe('imagesToPdf', function (): void {
     });
 
     it('throws when a path is null', function (): void {
-        stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+        stubNativephpCall(fn (): string|false => json_encode(['path' => '/output/combined.pdf']));
 
         $this->scanner->imagesToPdf([null]);
     })->throws(InvalidArgumentException::class, 'Each path must be a string.');
 
     it('throws when a path is an array', function (): void {
-        stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+        stubNativephpCall(fn (): string|false => json_encode(['path' => '/output/combined.pdf']));
 
         $this->scanner->imagesToPdf([['nested']]);
     })->throws(InvalidArgumentException::class, 'Each path must be a string.');
 
     it('throws when a path is a boolean', function (): void {
-        stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+        stubNativephpCall(fn (): string|false => json_encode(['path' => '/output/combined.pdf']));
 
         $this->scanner->imagesToPdf([true]);
     })->throws(InvalidArgumentException::class, 'Each path must be a string.');
 
     it('throws when outputPath is empty string', function (): void {
-        stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+        stubNativephpCall(fn (): string|false => json_encode(['path' => '/output/combined.pdf']));
 
         $this->scanner->imagesToPdf(['/path/scan_0.jpg'], '');
     })->throws(InvalidArgumentException::class, 'outputPath must be a non-empty string when provided.');
 
     it('throws when outputPath is whitespace only', function (): void {
-        stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+        stubNativephpCall(fn (): string|false => json_encode(['path' => '/output/combined.pdf']));
 
         $this->scanner->imagesToPdf(['/path/scan_0.jpg'], '   ');
     })->throws(InvalidArgumentException::class, 'outputPath must be a non-empty string when provided.');
 
     it('throws RuntimeException when bridge returns native error', function (): void {
-        stubNativephpCall(fn () => json_encode(['error' => 'No valid images found']));
+        stubNativephpCall(fn (): string|false => json_encode(['error' => 'No valid images found']));
 
         $this->scanner->imagesToPdf(['/path/scan_0.jpg']);
     })->throws(RuntimeException::class, 'No valid images found');
