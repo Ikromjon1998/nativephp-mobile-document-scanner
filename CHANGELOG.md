@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Declared `illuminate/support` (`^11.0|^12.0|^13.0`) as an explicit dependency instead of
   relying on transitive resolution
 - Removed the `ocr` keyword from `composer.json` — the plugin does not perform OCR
+- Bumped `orchestra/testbench` to `^10.0|^11.0` (Laravel 12/13). The previous `^9.0`
+  constraint resolved only to Laravel 11, which Composer now refuses to install because
+  every 11.x release carries an unresolved security advisory
 
 ## [1.4.0] - 2026-04-10
 

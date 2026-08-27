@@ -17,7 +17,7 @@
         "nativephp/mobile": "^3.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0",
+        "orchestra/testbench": "^10.0|^11.0",
         "pestphp/pest": "^3.0",
         "phpstan/phpstan": "^2.0",
         "larastan/larastan": "^3.0",
