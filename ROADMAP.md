@@ -36,7 +36,7 @@ Feature roadmap for the NativePHP Mobile Document Scanner plugin.
 
 ## Release History
 
-- v1.5.0: iOS `maxPages` enforcement, Android `jpegQuality` fix, iOS PDF page sizing, v3 platform baselines (Epic 3)
+- v1.5.0: NativePHP Mobile v4 support, iOS `maxPages` enforcement, Android `jpegQuality` fix, iOS PDF page sizing, v3 platform baselines (Epic 3)
 - v1.4.0: JPEG-to-PDF conversion, PDF page thumbnails (Epics 14 & 15)
 - v1.3.0: Warning log, quick-start README, real native linting, coverage 95% (Epics 9 & 10)
 - v1.2.0: Scanner mode selection (Epic 2)

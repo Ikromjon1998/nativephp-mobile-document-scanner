@@ -50,6 +50,10 @@ composer require ikromjon/nativephp-mobile-document-scanner
 php artisan native:plugin:register ikromjon/nativephp-mobile-document-scanner
 ```
 
+> **NativePHP Mobile v4:** v4 support ships in 1.5.0, which is in pre-release until its native
+> changes are confirmed on a device. Until then, install it with
+> `composer require ikromjon/nativephp-mobile-document-scanner:^1.5@beta`.
+
 Build your app (plugin requires a native build):
 
 ```bash
@@ -324,7 +328,7 @@ composer analyse
 ## Requirements
 
 - PHP 8.3+
-- NativePHP Mobile v3+
+- NativePHP Mobile v3 or v4
 - iOS 18+ / Android API 29+
 
 ## License

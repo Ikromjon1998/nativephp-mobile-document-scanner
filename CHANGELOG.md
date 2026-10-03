@@ -5,7 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.5.0] - 2026-08-28
+## [1.5.0-beta.1] - 2026-10-03
+
+> **Pre-release.** The native fixes below compile in a NativePHP Mobile v4 app on iOS and
+> Android, and the PDF functions run on the iOS simulator, but scanning itself has not yet been
+> run on a physical device — the scanner camera is not available in simulators. Install with
+> `composer require ikromjon/nativephp-mobile-document-scanner:^1.5@beta`. 1.5.0 follows once a
+> device scan confirms them.
+
+### Added
+
+- NativePHP for Mobile v4 support — widened the `nativephp/mobile` constraint to `^3.0|^4.0`
+  so the package installs on apps running v4. The bridge, event and manifest contracts the
+  plugin uses are unchanged in v4, so no PHP or native code changed for this
 
 ### Fixed
 
@@ -28,6 +40,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bumped `orchestra/testbench` to `^10.0|^11.0` (Laravel 12/13). The previous `^9.0`
   constraint resolved only to Laravel 11, which Composer now refuses to install because
   every 11.x release carries an unresolved security advisory
+- CI now tests `nativephp/mobile` `^3.0` and `^4.0` explicitly on PHP 8.3 and 8.4, and reports
+  one aggregate `tests` check. Without the explicit axis every job resolves v4, because
+  `nativephp/mobile` 4.5.0 restored PHP 8.3 support
 
 ## [1.4.0] - 2026-04-10
 
