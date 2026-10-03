@@ -23,9 +23,11 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
+import java.lang.ref.WeakReference
 
 object DocumentScannerFunctions {
     private const val TAG = "DocumentScanner"
+    private const val SCAN_LAUNCHER_KEY = "com.nativephp.documentscanner.scan"
 
     private var defaultMaxPages = 0
     private var defaultOutputFormat = "jpeg"
@@ -36,6 +38,7 @@ object DocumentScannerFunctions {
     private var defaultScannerMode = "full"
 
     private var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>? = null
+    private var launcherOwner: WeakReference<FragmentActivity>? = null
     private var currentOutputFormat = "jpeg"
     private var currentJpegQuality = 90
 
@@ -67,11 +70,20 @@ object DocumentScannerFunctions {
         }
     }
 
+    /**
+     * Registers with the activity's result registry directly rather than
+     * through registerForActivityResult(). That call is only legal before the
+     * activity is STARTED, and NativePHP v4 creates bridge functions after the
+     * activity has resumed, so it crashed the app at launch.
+     */
     fun registerLauncher(activity: FragmentActivity) {
-        if (scannerLauncher != null) return
+        if (scannerLauncher != null && launcherOwner?.get() === activity) return
 
+        scannerLauncher?.unregister()
+        launcherOwner = WeakReference(activity)
         scannerLauncher =
-            activity.registerForActivityResult(
+            activity.activityResultRegistry.register(
+                SCAN_LAUNCHER_KEY,
                 ActivityResultContracts.StartIntentSenderForResult(),
             ) { result: ActivityResult ->
                 if (result.resultCode == Activity.RESULT_OK) {

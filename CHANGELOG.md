@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0-beta.2] - 2026-10-04
+
+> **Pre-release.** Replaces 1.5.0-beta.1, which crashes at launch on Android under NativePHP
+> Mobile v4. Scanning itself still has not been run on a physical device. Install with
+> `composer require ikromjon/nativephp-mobile-document-scanner:^1.5@beta`.
+
+### Fixed
+
+- Android: the app crashed at launch on NativePHP for Mobile v4. v4 creates bridge functions
+  after the activity has resumed, and the scanner registered its result launcher with
+  `registerForActivityResult()`, which Android only allows before the activity starts. The
+  launcher is now registered with the activity's result registry directly, which is valid at
+  any point. NativePHP v3 creates bridge functions in `onCreate` and was not affected
+
 ## [1.5.0-beta.1] - 2026-10-03
 
 > **Pre-release.** The native fixes below compile in a NativePHP Mobile v4 app on iOS and
