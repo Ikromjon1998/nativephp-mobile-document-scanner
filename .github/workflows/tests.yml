@@ -7,14 +7,16 @@ on:
     branches: [main]
 
 jobs:
-  tests:
+  php:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         php: ['8.3', '8.4']
+        nativephp: ['^3.0', '^4.0']
 
-    name: PHP ${{ matrix.php }}
+    name: PHP ${{ matrix.php }} - NativePHP ${{ matrix.nativephp }}
 
     steps:
       - uses: actions/checkout@v5
@@ -26,7 +28,7 @@ jobs:
           coverage: xdebug
 
       - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
+        run: composer update --with "nativephp/mobile:${{ matrix.nativephp }}" --no-interaction --prefer-dist
 
       - name: Check code style
         run: vendor/bin/pint --test
@@ -66,3 +68,15 @@ jobs:
 
       - name: Lint Swift files
         run: swiftlint lint --strict --config resources/ios/.swiftlint.yml resources/ios/Sources/
+
+  # Single stable check for branch protection to require: it passes only when
+  # every job above passed, so the rule never needs editing when the matrix changes.
+  tests:
+    if: always()
+    needs: [php, lint-kotlin, lint-swift]
+    runs-on: ubuntu-latest
+    name: tests
+    steps:
+      - name: Require every job to have succeeded
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+        run: exit 1

@@ -12,7 +12,7 @@ it('resolves to the correct class', function (): void {
 });
 
 it('proxies scan calls to the underlying class', function (): void {
-    stubNativephpCall(fn () => json_encode(['success' => true]));
+    stubNativephpCall(fn (): string|false => json_encode(['success' => true]));
 
     $result = DocumentScanner::scan([
         'maxPages' => 3,
@@ -23,7 +23,7 @@ it('proxies scan calls to the underlying class', function (): void {
 });
 
 it('proxies scan with no options', function (): void {
-    stubNativephpCall(fn () => json_encode(['success' => true]));
+    stubNativephpCall(fn (): string|false => json_encode(['success' => true]));
 
     $result = DocumentScanner::scan();
 
@@ -31,7 +31,7 @@ it('proxies scan with no options', function (): void {
 });
 
 it('proxies imagesToPdf calls', function (): void {
-    stubNativephpCall(fn () => json_encode(['path' => '/output/combined.pdf']));
+    stubNativephpCall(fn (): string|false => json_encode(['path' => '/output/combined.pdf']));
 
     $result = DocumentScanner::imagesToPdf(['/path/scan_0.jpg']);
 
@@ -39,7 +39,7 @@ it('proxies imagesToPdf calls', function (): void {
 });
 
 it('proxies pdfToImages calls', function (): void {
-    stubNativephpCall(fn () => json_encode(['paths' => ['/output/page_0.jpg']]));
+    stubNativephpCall(fn (): string|false => json_encode(['paths' => ['/output/page_0.jpg']]));
 
     $result = DocumentScanner::pdfToImages('/path/scan.pdf');
 

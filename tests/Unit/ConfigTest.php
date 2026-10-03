@@ -66,7 +66,7 @@ describe('config flows to bridge', function (): void {
         config(['document-scanner.default_max_pages' => 10]);
 
         $capturedData = null;
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['success' => true]);
@@ -81,7 +81,7 @@ describe('config flows to bridge', function (): void {
         config(['document-scanner.default_output_format' => 'pdf']);
 
         $capturedData = null;
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['success' => true]);
@@ -96,7 +96,7 @@ describe('config flows to bridge', function (): void {
         config(['document-scanner.default_jpeg_quality' => 75]);
 
         $capturedData = null;
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['success' => true]);
@@ -111,7 +111,7 @@ describe('config flows to bridge', function (): void {
         config(['document-scanner.storage_directory' => 'custom-dir']);
 
         $capturedData = null;
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['success' => true]);
@@ -126,7 +126,7 @@ describe('config flows to bridge', function (): void {
         config(['document-scanner.default_gallery_import' => true]);
 
         $capturedData = null;
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['success' => true]);
@@ -141,7 +141,7 @@ describe('config flows to bridge', function (): void {
         config(['document-scanner.default_scanner_mode' => 'base']);
 
         $capturedData = null;
-        stubNativephpCall(function (string $function, string $data) use (&$capturedData) {
+        stubNativephpCall(function (string $function, string $data) use (&$capturedData): string|false {
             $capturedData = json_decode($data, true);
 
             return json_encode(['success' => true]);

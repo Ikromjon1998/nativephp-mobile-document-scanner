@@ -50,6 +50,10 @@ composer require ikromjon/nativephp-mobile-document-scanner
 php artisan native:plugin:register ikromjon/nativephp-mobile-document-scanner
 ```
 
+> **NativePHP Mobile v4:** v4 support ships in 1.5.0, which is in pre-release until its native
+> changes are confirmed on a device. Until then, install it with
+> `composer require ikromjon/nativephp-mobile-document-scanner:^1.5@beta`.
+
 Build your app (plugin requires a native build):
 
 ```bash
@@ -125,6 +129,11 @@ DocumentScanner::scan(new ScanOptions(
 | `jpegQuality`   | int                  | Both         | JPEG quality 1-100 (only for jpeg output) |
 | `galleryImport` | bool                 | Android only | Allow importing from device gallery       |
 | `scannerMode`   | ScannerMode\|string  | Android only | `base`, `filter`, or `full`               |
+
+> **Platform note on `maxPages`:** Android enforces the limit inside the scanner UI (ML Kit
+> `setPageLimit`). VisionKit has no equivalent API, so on iOS the user can keep scanning past the
+> limit — the plugin keeps only the first `maxPages` pages and reports that count in
+> `DocumentScanned`.
 
 ## Full Livewire Example
 
@@ -319,8 +328,8 @@ composer analyse
 ## Requirements
 
 - PHP 8.3+
-- NativePHP Mobile v3+
-- iOS 13+ / Android API 21+
+- NativePHP Mobile v3 or v4
+- iOS 18+ / Android API 29+
 
 ## License
 

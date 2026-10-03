@@ -11,11 +11,13 @@ class DocumentScannerDelegate: NSObject, VNDocumentCameraViewControllerDelegate 
     private var outputFormat: String = "jpeg"
     private var jpegQuality: CGFloat = 0.9
     private var storageDir: String = "scanned-documents"
+    private var maxPages: Int = 0
 
-    func configure(outputFormat: String, jpegQuality: Int, storageDir: String) {
+    func configure(outputFormat: String, jpegQuality: Int, storageDir: String, maxPages: Int) {
         self.outputFormat = outputFormat
         self.jpegQuality = CGFloat(max(1, min(100, jpegQuality))) / 100.0
         self.storageDir = storageDir
+        self.maxPages = maxPages
     }
 
     private func storageDirectory() throws -> URL {
@@ -56,17 +58,23 @@ class DocumentScannerDelegate: NSObject, VNDocumentCameraViewControllerDelegate 
         let timestamp = Int(Date().timeIntervalSince1970 * 1000)
         var paths: [String] = []
 
+        // VisionKit has no page-limit API, so `maxPages` is enforced here by
+        // only keeping the first N scanned pages.
+        let pageLimit = maxPages > 0 ? min(maxPages, scan.pageCount) : scan.pageCount
+        var pageCount = pageLimit
+
         if outputFormat == "pdf" {
             let pdfPath = dir.appendingPathComponent("scan_\(timestamp).pdf")
-            let pageSize = CGSize(width: 612, height: 792) // US Letter
-            let renderer = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: pageSize))
 
+            // Size each page to its own image so non-Letter documents are not
+            // stretched, matching the Android implementation.
+            let renderer = UIGraphicsPDFRenderer(bounds: .zero)
             let data = renderer.pdfData { context in
-                for i in 0..<scan.pageCount {
-                    context.beginPage()
+                for i in 0..<pageLimit {
                     let image = scan.imageOfPage(at: i)
-                    let rect = CGRect(origin: .zero, size: pageSize)
-                    image.draw(in: rect)
+                    let pageRect = CGRect(origin: .zero, size: image.size)
+                    context.beginPage(withBounds: pageRect, pageInfo: [:])
+                    image.draw(in: pageRect)
                 }
             }
 
@@ -81,7 +89,7 @@ class DocumentScannerDelegate: NSObject, VNDocumentCameraViewControllerDelegate 
                 return
             }
         } else {
-            for i in 0..<scan.pageCount {
+            for i in 0..<pageLimit {
                 let image = scan.imageOfPage(at: i)
                 let filePath = dir.appendingPathComponent("scan_\(timestamp)_\(i).jpg")
 
@@ -94,13 +102,14 @@ class DocumentScannerDelegate: NSObject, VNDocumentCameraViewControllerDelegate 
                     }
                 }
             }
+            pageCount = paths.count
         }
 
         dispatchEvent(
             "Ikromjon\\DocumentScanner\\Events\\DocumentScanned",
             [
                 "paths": paths,
-                "pageCount": paths.count,
+                "pageCount": pageCount,
                 "outputFormat": outputFormat,
             ]
         )
@@ -142,11 +151,14 @@ enum DocumentScannerFunctions {
             let jpegQuality = parameters["jpegQuality"] as? Int
                 ?? config["default_jpeg_quality"] as? Int ?? 90
             let storageDir = config["storage_directory"] as? String ?? "scanned-documents"
+            let maxPagesLimit = config["max_pages_limit"] as? Int ?? 100
+            let effectiveMaxPages = maxPages > 0 ? min(maxPages, maxPagesLimit) : 0
 
             DocumentScannerDelegate.shared.configure(
                 outputFormat: outputFormat,
                 jpegQuality: jpegQuality,
-                storageDir: storageDir
+                storageDir: storageDir,
+                maxPages: effectiveMaxPages
             )
 
             DispatchQueue.main.async {

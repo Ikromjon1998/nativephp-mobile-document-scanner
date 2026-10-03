@@ -3,9 +3,9 @@
 ## Requirements
 
 - PHP 8.3 or higher
-- Laravel 10 or higher
-- NativePHP Mobile v3+
-- iOS 13+ or Android API 21+
+- Laravel 11, 12, or 13
+- NativePHP Mobile v3 or v4
+- iOS 18+ or Android API 29+
 
 ## Step 1: Install the Package
 
