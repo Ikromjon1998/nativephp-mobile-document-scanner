@@ -6,8 +6,9 @@ namespace Ikromjon\DocumentScanner\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Native\Mobile\Events\Contracts\DispatchableFromNative;
 
-class PdfCreated
+class PdfCreated implements DispatchableFromNative
 {
     use Dispatchable;
     use SerializesModels;
