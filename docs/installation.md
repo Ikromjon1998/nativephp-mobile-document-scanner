@@ -4,7 +4,7 @@
 
 - PHP 8.3 or higher
 - Laravel 11, 12, or 13
-- NativePHP Mobile v3 or v4
+- NativePHP Mobile v3.3.11+ or v4.6.1+ (`nativephp/mobile` `^3.3.11|^4.6.1`) — see [Upgrading](../README.md#upgrading)
 - iOS 18+ or Android API 29+
 
 ## Step 1: Install the Package
