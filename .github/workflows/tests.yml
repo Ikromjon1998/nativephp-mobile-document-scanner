@@ -10,13 +10,31 @@ jobs:
   php:
     runs-on: ubuntu-latest
 
+    # The oldest nativephp/mobile releases that accept DispatchableFromNative
+    # events (3.3.11 and 4.6.1), installed with every other dependency at its
+    # lowest allowed version on the lowest supported PHP, and the newest 3.3.x
+    # and 4.8.x, which also sign native events.
     strategy:
       fail-fast: false
       matrix:
         php: ['8.3', '8.4']
-        nativephp: ['^3.0', '^4.0']
+        nativephp: ['3.3.11', '3.3.*', '4.6.1', '4.8.*']
+        exclude:
+          - php: '8.4'
+            nativephp: '3.3.11'
+          - php: '8.4'
+            nativephp: '4.6.1'
+        include:
+          - nativephp: '3.3.11'
+            dependencies: lowest
+          - nativephp: '3.3.*'
+            dependencies: highest
+          - nativephp: '4.6.1'
+            dependencies: lowest
+          - nativephp: '4.8.*'
+            dependencies: highest
 
-    name: PHP ${{ matrix.php }} - NativePHP ${{ matrix.nativephp }}
+    name: PHP ${{ matrix.php }} - NativePHP ${{ matrix.nativephp }} (${{ matrix.dependencies }})
 
     steps:
       - uses: actions/checkout@v5
@@ -28,15 +46,23 @@ jobs:
           coverage: xdebug
 
       - name: Install dependencies
-        run: composer update --with "nativephp/mobile:${{ matrix.nativephp }}" --no-interaction --prefer-dist
+        run: composer update --with "nativephp/mobile:${{ matrix.nativephp }}" ${{ matrix.dependencies == 'lowest' && '--prefer-lowest --prefer-stable' || '' }} --no-interaction --prefer-dist
 
+      - name: Show the installed nativephp/mobile
+        run: composer show nativephp/mobile
+
+      # Style, refactoring and analysis results depend on the tool versions, so
+      # they run with the current tools only.
       - name: Check code style
+        if: matrix.dependencies == 'highest'
         run: vendor/bin/pint --test
 
       - name: Check refactoring
+        if: matrix.dependencies == 'highest'
         run: vendor/bin/rector process --dry-run
 
       - name: Run static analysis
+        if: matrix.dependencies == 'highest'
         run: vendor/bin/phpstan analyse
 
       - name: Run tests

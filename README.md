@@ -64,6 +64,22 @@ php artisan native:run ios
 
 > **Note:** The scanner requires a native build on a real device — it won't work with `php artisan serve`. If you call `scan()` without a native build, you'll see a warning in your Laravel log.
 
+## Upgrading
+
+The plugin requires `nativephp/mobile` 3.3.11+ (v3) or 4.6.1+ (v4). Those releases only deliver native events that implement `DispatchableFromNative` to Laravel listeners, and the plugin's events implement it. Update NativePHP and the plugin together, then rebuild the native project:
+
+```bash
+# NativePHP for Mobile v3
+composer require "ikromjon/nativephp-mobile-document-scanner:^1.5@beta" "nativephp/mobile:^3.3.11" -W
+
+# NativePHP for Mobile v4
+composer require "ikromjon/nativephp-mobile-document-scanner:^1.5@beta" "nativephp/mobile:^4.6.1" -W
+
+php artisan native:install --force
+```
+
+Name the 1.5 line explicitly: 1.4.0, the newest stable release, also installs on these NativePHP versions, but its events never reach Laravel listeners there. Drop `@beta` once 1.5.0 is released.
+
 ## Configuration
 
 Optionally publish the config file:
@@ -328,7 +344,7 @@ composer analyse
 ## Requirements
 
 - PHP 8.3+
-- NativePHP Mobile v3 or v4
+- NativePHP Mobile v3.3.11+ or v4.6.1+ (`nativephp/mobile` `^3.3.11|^4.6.1`)
 - iOS 18+ / Android API 29+
 
 ## License

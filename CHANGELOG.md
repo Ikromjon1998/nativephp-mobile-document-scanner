@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+> **Requires `nativephp/mobile` 3.3.11+ or 4.6.1+.** Update NativePHP together with the plugin
+> and rebuild with `php artisan native:install --force` — see [Upgrading](README.md#upgrading).
+> The plugin's own native code is unchanged.
+
+### Fixed
+
+- Laravel listeners receive the scanner's events on `nativephp/mobile` 3.3.11+ and 4.6.1+.
+  Those releases fix security advisory GHSA-83jv-8h7x-287p: `POST /_native/api/events` now
+  constructs only event classes that implement
+  `Native\Mobile\Events\Contracts\DispatchableFromNative`, and answers `{"success": false}` for
+  any other. None of the plugin's events implemented it, so on those versions `Event::listen`
+  listeners and event subscribers never received `DocumentScanned`, `ScanCancelled`,
+  `ScanFailed` or `PdfCreated`. Livewire `#[OnNative]`, JavaScript `On(...)` and NativePHP 4
+  `#[On]` handlers were not affected. All four events now implement the marker
+
+### Changed
+
+- **Breaking:** raised the `nativephp/mobile` constraint to `^3.3.11|^4.6.1` (was `^3.0|^4.0`).
+  `DispatchableFromNative` does not exist in earlier releases, so implementing it requires them
+- CI pins the NativePHP releases the events depend on: 3.3.11 and 4.6.1 with every dependency
+  at its lowest allowed version (on PHP 8.3), and the newest 3.3.x and 4.8.x, which also sign
+  native events (on PHP 8.3 and 8.4). The aggregate `tests` check is unchanged
+- Added tests for the native events contract: an architecture test that every class in
+  `Ikromjon\DocumentScanner\Events` implements the marker; a contract test that every payload
+  the Swift and Kotlin code sends uses only constructor parameters and includes every required
+  one; and an endpoint test that posts each payload through the installed core's own
+  `routes/api.php` and checks that an `Event::listen` listener receives it, also with a signed
+  request where the core signs events
+
 ## [1.5.0-beta.1] - 2026-10-03
 
 > **Pre-release.** The native fixes below compile in a NativePHP Mobile v4 app on iOS and
